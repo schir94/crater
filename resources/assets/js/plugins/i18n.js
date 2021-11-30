@@ -21,8 +21,8 @@ import vi from './vi.json'
 Vue.use(VueI18n)
 
 const i18n = new VueI18n({
-  locale: 'en',
-  fallbackLocale: 'en',
+  locale: 'it',
+  fallbackLocale: 'it',
   messages: {
     en,
     fr,

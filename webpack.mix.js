@@ -27,6 +27,12 @@ if (!mix.inProduction()) {
       devtool: 'source-map',
     })
     .sourceMaps()
+    .options({
+      hmrOptions: {
+        host: process.env.SESSION_DOMAIN,
+        port: 8080,
+      },
+    })
 } else {
   mix.version()
 }

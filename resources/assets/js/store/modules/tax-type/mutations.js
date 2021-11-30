@@ -10,9 +10,7 @@ export default {
   },
 
   [types.UPDATE_TAX_TYPE](state, data) {
-    let pos = state.taxTypes.findIndex(
-      (taxType) => taxType.id === data.taxType.id
-    )
+    let pos = state.taxTypes.findIndex((taxType) => taxType.id === data.taxType.id)
     Object.assign(state.taxTypes[pos], { ...data.taxType })
   },
 

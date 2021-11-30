@@ -2,9 +2,10 @@
 
 namespace Crater\Http\Controllers\V1\Invoice;
 
+use Auth;
 use Crater\Http\Controllers\Controller;
-use Crater\Http\Requests;
 use Crater\Http\Requests\DeleteInvoiceRequest;
+use Crater\Http\Requests\InvoicesRequest;
 use Crater\Jobs\GenerateInvoicePdfJob;
 use Crater\Models\Invoice;
 use Illuminate\Http\Request;
@@ -18,6 +19,8 @@ class InvoicesController extends Controller
      */
     public function index(Request $request)
     {
+        $user = Auth::user();
+
         $limit = $request->has('limit') ? $request->limit : 10;
 
         $invoices = Invoice::with(['items', 'user', 'creator', 'taxes'])
@@ -34,8 +37,13 @@ class InvoicesController extends Controller
                 'orderBy',
                 'search',
             ]))
-            ->whereCompany($request->header('company'))
-            ->select('invoices.*', 'users.name')
+            ->whereCompany($request->header('company'));
+
+        if ($user->isCustomer()) {
+            $invoices = $invoices->where('user_id', $user->id);
+        }
+
+        $invoices = $invoices->select('invoices.*', 'users.name')
             ->latest()
             ->paginateData($limit);
 
@@ -51,7 +59,7 @@ class InvoicesController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Requests\InvoicesRequest $request)
+    public function store(InvoicesRequest $request)
     {
         $invoice = Invoice::createInvoice($request);
 
@@ -98,7 +106,7 @@ class InvoicesController extends Controller
      * @param  Invoice $invoice
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Requests\InvoicesRequest $request, Invoice $invoice)
+    public function update(InvoicesRequest $request, Invoice $invoice)
     {
         $invoice = $invoice->updateInvoice($request);
 

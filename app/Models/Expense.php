@@ -83,14 +83,14 @@ class Expense extends Model implements HasMedia
     {
         foreach (explode(' ', $search) as $term) {
             $query->whereHas('category', function ($query) use ($term) {
-                $query->where('name', 'LIKE', '%'.$term.'%');
+                $query->where('name', 'LIKE', '%' . $term . '%');
             });
         }
     }
 
     public function scopeWhereNotes($query, $search)
     {
-        $query->where('notes', 'LIKE', '%'.$search.'%');
+        $query->where('notes', 'LIKE', '%' . $search . '%');
     }
 
     public function scopeWhereCategory($query, $categoryId)
@@ -145,9 +145,9 @@ class Expense extends Model implements HasMedia
     {
         foreach (explode(' ', $search) as $term) {
             $query->whereHas('category', function ($query) use ($term) {
-                $query->where('name', 'LIKE', '%'.$term.'%');
+                $query->where('name', 'LIKE', '%' . $term . '%');
             })
-                ->orWhere('notes', 'LIKE', '%'.$term.'%');
+                ->orWhere('notes', 'LIKE', '%' . $term . '%');
         }
     }
 
@@ -184,8 +184,18 @@ class Expense extends Model implements HasMedia
     public static function createExpense($request)
     {
         $data = $request->validated();
+
         $data['creator_id'] = Auth::id();
         $data['company_id'] = $request->header('company');
+
+        //Increase customer credit
+        if ($request->has('user_id') && $request->user_id != null) {
+            $user = User::find($request->user_id);
+
+            $user->credit_amount = $user->credit_amount + $data['amount'];
+
+            $user->save();
+        }
 
         $expense = self::create($data);
 
@@ -204,7 +214,20 @@ class Expense extends Model implements HasMedia
 
     public function updateExpense($request)
     {
-        $this->update($request->validated());
+        $oldAmount = $this->amount;
+
+        $data = $request->validated();
+
+        //Increase customer credit
+        if ($request->has('user_id') && $request->user_id != null) {
+            $user = User::find($request->user_id);
+
+            $user->credit_amount = ($user->credit_amount - $oldAmount) + $data['amount'];
+
+            $user->save();
+        }
+
+        $this->update($data);
 
         if ($request->hasFile('attachment_receipt')) {
             $this->clearMediaCollection('receipts');
@@ -215,6 +238,24 @@ class Expense extends Model implements HasMedia
 
         if ($customFields) {
             $this->updateCustomFields($customFields);
+        }
+
+        return true;
+    }
+
+    public static function deleteExpenses($ids)
+    {
+        foreach ($ids as $id) {
+
+            $expenses = Expense::with('user')->find($id);
+
+            //Update credit based on new amount
+            if ($expenses->user) {
+                $expenses->user->credit_amount = $expenses->user->credit_amount - $expenses->amount;
+                $expenses->user->save();
+            }
+
+            Expense::destroy($id);
         }
 
         return true;

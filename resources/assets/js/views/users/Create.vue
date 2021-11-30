@@ -48,8 +48,8 @@
               required
             >
               <sw-input
-                :invalid="$v.formData.email.$error"
                 v-model.trim="formData.email"
+                :invalid="$v.formData.email.$error"
                 type="text"
                 name="email"
                 tab-index="3"
@@ -216,7 +216,6 @@ export default {
         email,
         required,
       },
-
       password: {
         required: requiredIf(function () {
           return !this.isEdit

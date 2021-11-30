@@ -128,8 +128,9 @@
         </p>
 
         <sw-tabs :active-tab="activeTab" @update="setStatusFilter">
-          <sw-tab-item :title="$t('general.due')" filter="DUE" />
-          <sw-tab-item :title="$t('general.draft')" filter="DRAFT" />
+          <sw-tab-item :title="$t('general.sent')" filter="SENT" />
+          <!-- <sw-tab-item :title="$t('general.draft')" filter="DRAFT" /> -->
+          <sw-tab-item :title="$t('invoices.completed')" filter="COMPLETED" />
           <sw-tab-item :title="$t('general.all')" filter="" />
         </sw-tabs>
 
@@ -306,21 +307,21 @@
                 {{ $t('invoices.view') }}
               </sw-dropdown-item>
 
-              <sw-dropdown-item
+              <!-- <sw-dropdown-item
                 v-if="row.status == 'DRAFT'"
                 @click="sendInvoice(row)"
               >
                 <paper-airplane-icon class="h-5 mr-3 text-gray-600" />
                 {{ $t('invoices.send_invoice') }}
-              </sw-dropdown-item>
+              </sw-dropdown-item> -->
 
-              <sw-dropdown-item
+              <!-- <sw-dropdown-item
                 v-if="row.status === 'SENT' || row.status === 'VIEWED'"
                 @click="sendInvoice(row)"
               >
                 <paper-airplane-icon class="h-5 mr-3 text-gray-600" />
                 {{ $t('invoices.resend_invoice') }}
-              </sw-dropdown-item>
+              </sw-dropdown-item> -->
 
               <sw-dropdown-item
                 v-if="row.status == 'DRAFT'"
@@ -433,10 +434,10 @@ export default {
       ],
 
       isRequestOngoing: true,
-      activeTab: this.$t('general.due'),
+      activeTab: this.$t('general.sent'),
       filters: {
         customer: '',
-        status: { name: 'DUE', value: 'DUE' },
+        status: { name: 'SENT', value: 'SENT' },
         from_date: '',
         to_date: '',
         invoice_number: '',
@@ -608,15 +609,24 @@ export default {
     },
 
     setStatusFilter(val) {
+      console.log(val)
+
       if (this.activeTab == val.title) {
         return true
       }
       this.activeTab = val.title
       switch (val.title) {
-        case this.$t('general.due'):
+        case this.$t('general.sent'):
           this.filters.status = {
-            name: 'DUE',
-            value: 'DUE',
+            name: 'SENT',
+            value: 'SENT',
+          }
+          break
+
+        case this.$t('invoices.completed'):
+          this.filters.status = {
+            name: 'COMPLETED',
+            value: 'COMPLETED',
           }
           break
 

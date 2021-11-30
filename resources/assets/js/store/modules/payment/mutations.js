@@ -44,9 +44,7 @@ export default {
   },
 
   [types.DELETE_PAYMENT_MODE](state, id) {
-    let index = state.paymentModes.findIndex(
-      (paymentMethod) => paymentMethod.id === id
-    )
+    let index = state.paymentModes.findIndex((paymentMethod) => paymentMethod.id === id)
     state.paymentModes.splice(index, 1)
   },
 

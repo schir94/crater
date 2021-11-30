@@ -35,14 +35,14 @@ class BootstrapController extends Controller
 
         $settings = CompanySetting::getSettings($settings, $user->company_id);
 
-        $default_currency = Currency::findOrFail($settings['currency']);
+        //$default_currency = Currency::findOrFail($settings['currency']);
 
         return response()->json([
             'user' => $user,
             'company' => $user->company,
             'currencies' => Currency::all(),
             'countries' => Country::all(),
-            'default_currency' => $default_currency,
+            //'default_currency' => $default_currency,
             'default_language' => $default_language,
             'moment_date_format' => $settings['moment_date_format'],
             'carbon_date_format' => $settings['carbon_date_format'],

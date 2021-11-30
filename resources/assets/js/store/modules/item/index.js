@@ -7,7 +7,7 @@ const initialState = {
   totalItems: 0,
   selectAllField: false,
   selectedItems: [],
-  itemUnits: []
+  itemUnits: [],
 }
 
 export default {
@@ -19,5 +19,5 @@ export default {
 
   actions: actions,
 
-  mutations: mutations
+  mutations: mutations,
 }

@@ -150,7 +150,7 @@
             />
           </sw-input-group>
 
-          <sw-input-group :label="$t('expenses.receipt')">
+          <!-- <sw-input-group :label="$t('expenses.receipt')">
             <div
               id="receipt-box"
               class="relative flex items-center justify-center h-24 p-6 bg-transparent border-2 border-gray-200 border-dashed rounded-md image-upload-box"
@@ -187,7 +187,7 @@
                 />
               </template>
             </sw-avatar>
-          </sw-input-group>
+          </sw-input-group> -->
         </div>
 
         <div v-if="customFields.length > 0">

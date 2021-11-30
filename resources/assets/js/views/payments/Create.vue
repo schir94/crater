@@ -69,32 +69,49 @@
             required
           >
             <sw-input
+              v-model.trim="paymentNumAttribute"
               :prefix="`${paymentPrefix} - `"
               :invalid="$v.paymentNumAttribute.$error"
-              v-model.trim="paymentNumAttribute"
               class="mt-1"
               @input="$v.paymentNumAttribute.$touch()"
             />
           </sw-input-group>
 
-          <sw-input-group
-            :label="$t('payments.customer')"
-            :error="customerError"
-            required
-          >
-            <sw-select
-              v-model="customer"
-              :options="customers"
-              :searchable="true"
-              :show-labels="false"
-              :allow-empty="false"
-              :disabled="isEdit"
-              :placeholder="$t('customers.select_a_customer')"
-              label="name"
-              class="mt-1"
-              track-by="id"
-            />
-          </sw-input-group>
+
+          <div class="grid gap-2 grid-col-1 md:grid-cols-2">
+              <sw-input-group
+                :label="$t('payments.customer')"
+                :error="customerError"
+                required
+              >
+                <sw-select
+                  v-model="customer"
+                  :options="customers"
+                  :searchable="true"
+                  :show-labels="false"
+                  :allow-empty="false"
+                  :disabled="isEdit"
+                  :placeholder="$t('customers.select_a_customer')"
+                  label="name"
+                  class="mt-1"
+                  track-by="id"
+                />
+
+              </sw-input-group>
+
+              <sw-input-group
+                :label="$t('customers.credits')"
+              >
+
+              <sw-money
+                v-model="credit_amount"
+                :currency="customerCurrency"
+                class="relative w-full focus:border focus:border-solid focus:border-primary-500"
+                :disabled="true"
+                />
+
+            </sw-input-group>
+          </div>
 
           <sw-input-group :label="$t('payments.invoice')">
             <sw-select
@@ -121,11 +138,7 @@
                 v-model="amount"
                 :currency="customerCurrency"
                 :invalid="$v.formData.amount.$error"
-                class="
-                  relative
-                  w-full
-                  focus:border focus:border-solid focus:border-primary-500
-                "
+                class="relative w-full focus:border focus:border-solid focus:border-primary-500"
                 @input="$v.formData.amount.$touch()"
               />
             </div>
@@ -145,18 +158,7 @@
               <div slot="afterList">
                 <button
                   type="button"
-                  class="
-                    flex
-                    items-center
-                    justify-center
-                    w-full
-                    px-2
-                    py-2
-                    bg-gray-200
-                    border-none
-                    outline-none
-                    text-primary-400
-                  "
+                  class="flex items-center justify-center w-full px-2 py-2 bg-gray-200 border-none outline-none text-primary-400"
                   @click="addPaymentMode"
                 >
                   <shopping-cart-icon class="h-5 mr-3 text-primary-400" />
@@ -173,15 +175,15 @@
           <div class="grid gap-6 mt-6 grid-col-1 md:grid-cols-2">
             <sw-input-group
               v-for="(field, index) in customFields"
+              :key="index"
               :label="field.label"
               :required="field.is_required ? true : false"
-              :key="index"
             >
               <component
+                :is="field.type + 'Field'"
                 :type="field.type.label"
                 :field="field"
                 :is-edit="isEdit"
-                :is="field.type + 'Field'"
                 :invalid-fields="invalidFields"
                 @update="setCustomFieldValue"
               />
@@ -229,8 +231,12 @@ import { mapActions, mapGetters } from 'vuex'
 import moment from 'moment'
 import { ShoppingCartIcon } from '@vue-hero-icons/solid'
 import CustomFieldsMixin from '../../mixins/customFields'
+import axios from 'axios'
 
-const { required, between, numeric } = require('vuelidate/lib/validators')
+const { required, between, numeric, maxValue } = require('vuelidate/lib/validators')
+//const contains = (param) =>
+//  (value) => !helpers.req(value) || value.indexOf(param) >= 0
+
 
 export default {
   components: { ShoppingCartIcon },
@@ -256,6 +262,7 @@ export default {
         masked: false,
       },
       customer: null,
+      credit_amount: null,
       invoice: null,
       invoiceList: [],
       isLoading: false,
@@ -284,7 +291,8 @@ export default {
         },
         amount: {
           required,
-          between: between(1, this.maxPayableAmount + 1),
+          between: between(1, this.credit_amount * 100),
+          maxValue: maxValue(this.maxPayableAmount),
         },
       },
       paymentNumAttribute: {
@@ -365,6 +373,9 @@ export default {
       }
 
       if (!this.$v.formData.amount.between && this.amount > 0) {
+        return this.$t('validation.payment_greater_than_available_credits')
+      }
+      if (!this.$v.formData.amount.maxValue) {
         return this.$t('validation.payment_greater_than_due_amount')
       }
     },
@@ -385,6 +396,7 @@ export default {
   watch: {
     customer(newValue) {
       this.formData.user_id = newValue.id
+      this.credit_amount = newValue.credit_amount / 100
       if (!this.isEdit) {
         if (this.isSettingInitialData) {
           this.isSettingInitialData = false
@@ -405,9 +417,9 @@ export default {
     invoice(newValue) {
       if (newValue) {
         this.formData.invoice_id = newValue.id
-        if (!this.isEdit) {
-          this.setPaymentAmountByInvoiceData(newValue.id)
-        }
+        //if (!this.isEdit) {
+        this.setPaymentAmountByInvoiceData(newValue.id)
+        //}
       }
     },
   },
@@ -576,7 +588,8 @@ export default {
           if (response.data.success) {
             this.isLoading = false
             this.$router.push(
-              `/admin/payments/${response.data.payment.id}/view`
+              //`/admin/payments/${response.data.payment.id}/view`
+              `/admin/payments/`
             )
             this.showNotification({
               type: 'success',
@@ -584,7 +597,6 @@ export default {
             })
             return true
           }
-
           if (response.data.error === 'invalid_amount') {
             this.showNotification({
               type: 'error',
@@ -627,7 +639,8 @@ export default {
 
           if (response.data.success) {
             this.$router.push(
-              `/admin/payments/${response.data.payment.id}/view`
+              //`/admin/payments/${response.data.payment.id}/view`
+              `/admin/payments`
             )
             this.showNotification({
               type: 'success',
@@ -636,7 +649,13 @@ export default {
             this.isLoading = true
             return true
           }
-
+          if (response.data.error === 'not_enough_credit') {
+            this.showNotification({
+              type: 'error',
+              message: this.$t('payments.not_enough_credit'),
+            })
+            return false
+          }
           if (response.data.error === 'invalid_amount') {
             this.showNotification({
               type: 'error',

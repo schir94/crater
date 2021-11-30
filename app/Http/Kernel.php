@@ -3,6 +3,7 @@
 namespace Crater\Http;
 
 use Crater\Http\Middleware\AdminMiddleware;
+use Crater\Http\Middleware\CustomerMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
@@ -63,6 +64,7 @@ class Kernel extends HttpKernel
         'guest' => \Crater\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'admin' => AdminMiddleware::class,
+        'customer' => CustomerMiddleware::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'install' => \Crater\Http\Middleware\InstallationMiddleware::class,
         'redirect-if-installed' => \Crater\Http\Middleware\RedirectIfInstalled::class,

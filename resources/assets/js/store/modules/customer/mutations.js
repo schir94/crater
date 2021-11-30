@@ -14,9 +14,7 @@ export default {
   },
 
   [types.UPDATE_CUSTOMER](state, data) {
-    let pos = state.customers.findIndex(
-      (customer) => customer.id === data.customer.id
-    )
+    let pos = state.customers.findIndex((customer) => customer.id === data.customer.id)
 
     state.customers[pos] = data.customer
   },

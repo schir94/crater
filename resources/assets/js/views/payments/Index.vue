@@ -55,7 +55,7 @@
           />
         </sw-input-group>
 
-        <sw-input-group
+        <!-- <sw-input-group
           :label="$t('payments.payment_mode')"
           class="flex-1 mt-2 lg:ml-6"
         >
@@ -67,7 +67,7 @@
             :placeholder="$t('payments.payment_mode')"
             label="name"
           />
-        </sw-input-group>
+        </sw-input-group> -->
 
         <label
           class="absolute text-sm leading-snug text-gray-900 cursor-pointer"
@@ -179,12 +179,16 @@
         >
           <template slot-scope="row">
             <span>{{ $t('payments.payment_number') }}</span>
-            <router-link
+            <!--             <router-link
               :to="{ path: `payments/${row.id}/view` }"
               class="font-medium text-primary-500"
             >
               {{ row.payment_number }}
-            </router-link>
+            </router-link> -->
+
+            <span class="font-medium text-primary-500">
+              {{ row.payment_number }}
+            </span>
           </template>
         </sw-table-column>
 
@@ -194,7 +198,7 @@
           show="name"
         />
 
-        <sw-table-column
+        <!--  <sw-table-column
           :sortable="true"
           :label="$t('payments.payment_mode')"
           show="payment_mode"
@@ -209,7 +213,7 @@
               }}
             </span>
           </template>
-        </sw-table-column>
+        </sw-table-column> -->
 
         <sw-table-column
           :sortable="true"
@@ -232,7 +236,9 @@
         <sw-table-column :sortable="true" :label="$t('payments.amount')">
           <template slot-scope="row">
             <span>{{ $t('payments.amount') }}</span>
-            <div v-html="$utils.formatMoney(row.amount, row.user.currency)" />
+            <div>
+              {{ $utils.formatMoney(row.amount, row.user.currency) }}
+            </div>
           </template>
         </sw-table-column>
 
@@ -254,13 +260,13 @@
                 {{ $t('general.edit') }}
               </sw-dropdown-item>
 
-              <sw-dropdown-item
+              <!-- <sw-dropdown-item
                 :to="`payments/${row.id}/view`"
                 tag-name="router-link"
               >
                 <eye-icon class="h-5 mr-3 text-gray-600" />
                 {{ $t('general.view') }}
-              </sw-dropdown-item>
+              </sw-dropdown-item> -->
 
               <sw-dropdown-item @click="removePayment(row.id)">
                 <trash-icon class="h-5 mr-3 text-gray-600" />
@@ -298,7 +304,6 @@ export default {
     PencilIcon,
     TrashIcon,
   },
-
   data() {
     return {
       showFilters: false,
@@ -312,7 +317,6 @@ export default {
       },
     }
   },
-
   computed: {
     showEmptyScreen() {
       return !this.totalPayments && !this.isRequestOngoing

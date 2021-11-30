@@ -8,11 +8,7 @@ export const fetchUsers = ({ commit, dispatch, state }, params) => {
       .then((response) => {
         commit(types.BOOTSTRAP_USERS, response.data.users.data)
         commit(types.SET_TOTAL_USERS, response.data.users.total)
-        commit(
-          'search/' + searchTypes.SET_USER_LISTS,
-          response.data.users.data,
-          { root: true }
-        )
+        commit('search/' + searchTypes.SET_USER_LISTS, response.data.users.data, { root: true })
         resolve(response)
       })
       .catch((err) => {

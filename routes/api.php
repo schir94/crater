@@ -143,7 +143,8 @@ Route::prefix('/v1')->group(function () {
     });
 
 
-    Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+    //Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
 
 
         // Bootstrap
@@ -242,7 +243,7 @@ Route::prefix('/v1')->group(function () {
 
         // Estimates
         //-------------------------------------------------
-
+/*
         Route::post('/estimates/{estimate}/send', SendEstimateController::class);
 
         Route::post('/estimates/{estimate}/status', ChangeEstimateStatusController::class);
@@ -254,7 +255,7 @@ Route::prefix('/v1')->group(function () {
         Route::post('/estimates/delete', [EstimatesController::class, 'delete']);
 
         Route::apiResource('estimates', EstimatesController::class);
-
+*/
 
         // Expenses
         //----------------------------------

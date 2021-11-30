@@ -6,7 +6,7 @@ const initialState = {
   expenses: [],
   totalExpenses: 0,
   selectAllField: false,
-  selectedExpenses: []
+  selectedExpenses: [],
 }
 
 export default {
@@ -18,5 +18,5 @@ export default {
 
   actions: actions,
 
-  mutations: mutations
+  mutations: mutations,
 }

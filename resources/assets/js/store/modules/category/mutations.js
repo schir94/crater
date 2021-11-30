@@ -10,9 +10,7 @@ export default {
   },
 
   [types.UPDATE_CATEGORY](state, data) {
-    let pos = state.categories.findIndex(
-      (category) => category.id === data.category.id
-    )
+    let pos = state.categories.findIndex((category) => category.id === data.category.id)
     Object.assign(state.categories[pos], { ...data.category })
   },
 

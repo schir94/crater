@@ -134,7 +134,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { ShoppingCartIcon } from '@vue-hero-icons/solid'
-import TheSiteHeaderVue from '../layouts/partials/TheSiteHeader.vue'
+//import TheSiteHeaderVue from '../layouts/partials/TheSiteHeader.vue'
 const {
   required,
   minLength,

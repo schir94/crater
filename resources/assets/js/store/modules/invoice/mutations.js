@@ -23,9 +23,7 @@ export default {
   },
 
   [types.UPDATE_INVOICE](state, data) {
-    let pos = state.invoices.findIndex(
-      (invoice) => invoice.id === data.invoice.id
-    )
+    let pos = state.invoices.findIndex((invoice) => invoice.id === data.invoice.id)
 
     state.invoices[pos] = data.invoice
   },

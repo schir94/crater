@@ -7,9 +7,9 @@
       required
     >
       <sw-input
+        v-model="loginData.email"
         :invalid="$v.loginData.email.$error"
         :placeholder="$t(login.login_placeholder)"
-        v-model="loginData.email"
         focus
         type="email"
         name="email"
@@ -30,7 +30,7 @@
         name="password"
         @input="$v.loginData.password.$touch()"
       >
-        <template v-slot:rightIcon>
+        <template #rightIcon>
           <eye-off-icon
             v-if="isShowPassword"
             class="w-5 h-5 mr-1 text-gray-500 cursor-pointer"
@@ -70,16 +70,16 @@
 <script type="text/babel">
 import { mapActions } from 'vuex'
 import { EyeIcon, EyeOffIcon } from '@vue-hero-icons/outline'
-import IconFacebook from '../../components/icon/facebook'
-import IconTwitter from '../../components/icon/twitter'
-import IconGoogle from '../../components/icon/google'
+//import IconFacebook from '../../components/icon/facebook'
+//import IconTwitter from '../../components/icon/twitter'
+//import IconGoogle from '../../components/icon/google'
 const { required, email, minLength } = require('vuelidate/lib/validators')
 
 export default {
   components: {
-    IconFacebook,
-    IconTwitter,
-    IconGoogle,
+    //conFacebook,
+    //conTwitter,
+    //conGoogle,
     EyeIcon,
     EyeOffIcon,
   },
@@ -118,6 +118,7 @@ export default {
       if (!this.$v.loginData.email.email) {
         return this.$tc('validation.email_incorrect')
       }
+      return ''
     },
 
     passwordError() {
@@ -134,6 +135,7 @@ export default {
           { count: this.$v.loginData.password.$params.minLength.min }
         )
       }
+      return ''
     },
 
     getInputType() {

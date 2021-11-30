@@ -43,23 +43,17 @@ export default {
   },
 
   [types.DELETE_INVOICE](state, data) {
-    let index = state.dueInvoices.findIndex(
-      (invoice) => invoice.id === data.ids[0]
-    )
+    let index = state.dueInvoices.findIndex((invoice) => invoice.id === data.ids[0])
     state.dueInvoices.splice(index, 1)
   },
 
   [types.DELETE_ESTIMATE](state, data) {
-    let index = state.recentEstimates.findIndex(
-      (estimate) => estimate.id === data.ids[0]
-    )
+    let index = state.recentEstimates.findIndex((estimate) => estimate.id === data.ids[0])
     state.recentEstimates.splice(index, 1)
   },
 
   [types.UPDATE_ESTIMATE_STATUS](state, data) {
-    let pos = state.recentEstimates.findIndex(
-      (estimate) => estimate.id === data.id
-    )
+    let pos = state.recentEstimates.findIndex((estimate) => estimate.id === data.id)
 
     if (state.recentEstimates[pos]) {
       state.recentEstimates[pos].status = data.status

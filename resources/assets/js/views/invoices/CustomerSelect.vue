@@ -129,6 +129,24 @@
           </div>
         </div>
       </div>
+
+      <div
+        v-if="selectedCustomer.credit_amount"
+        class="flex items-center justify-center w-full px-2 py-3 bg-gray-200 border-none outline-none mt-2"
+      >
+        <label
+          class="text-sm leading-none cursor-pointer font-base text-primary-400"
+          v-html="
+            $t('customers.credits') +
+            ': ' +
+            $utils.formatMoney(
+              selectedCustomer.credit_amount,
+              selectedCustomer.currency
+            )
+          "
+        >
+        </label>
+      </div>
     </div>
 
     <div v-else>

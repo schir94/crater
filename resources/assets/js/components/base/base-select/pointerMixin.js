@@ -48,8 +48,7 @@ export default {
     optionHighlight(index, option) {
       return [
         {
-          'multiselect__option--highlight':
-            index === this.pointer && this.showPointer,
+          'multiselect__option--highlight': index === this.pointer && this.showPointer,
           'multiselect__option--selected': this.isSelected(option),
         },
         multiselectOption,
@@ -57,11 +56,7 @@ export default {
     },
     groupHighlight(index, selectedGroup) {
       if (!this.groupSelect) {
-        return [
-          'multiselect__option--group',
-          'multiselect__option--disabled',
-          multiselectOption,
-        ]
+        return ['multiselect__option--group', 'multiselect__option--disabled', multiselectOption]
       }
 
       const group = this.options.find((option) => {
@@ -72,13 +67,10 @@ export default {
         ? [
             'multiselect__option--group',
             {
-              'multiselect__option--highlight':
-                index === this.pointer && this.showPointer,
+              'multiselect__option--highlight': index === this.pointer && this.showPointer,
             },
             {
-              'multiselect__option--group-selected': this.wholeGroupSelected(
-                group
-              ),
+              'multiselect__option--group-selected': this.wholeGroupSelected(group),
             },
             multiselectOption,
           ]
@@ -101,8 +93,7 @@ export default {
           this.pointerPosition - (this.visibleElements - 1) * this.optionHeight
         ) {
           this.$refs.list.scrollTop =
-            this.pointerPosition -
-            (this.visibleElements - 1) * this.optionHeight
+            this.pointerPosition - (this.visibleElements - 1) * this.optionHeight
         }
         /* istanbul ignore else */
         if (
@@ -151,9 +142,7 @@ export default {
     pointerAdjust() {
       /* istanbul ignore else */
       if (this.pointer >= this.filteredOptions.length - 1) {
-        this.pointer = this.filteredOptions.length
-          ? this.filteredOptions.length - 1
-          : 0
+        this.pointer = this.filteredOptions.length ? this.filteredOptions.length - 1 : 0
       }
 
       if (

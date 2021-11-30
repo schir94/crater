@@ -2,7 +2,7 @@
 <html lang="en" class="h-full">
 
 <head>
-    <title>Crater - Self Hosted Invoicing Platform</title>
+    <title>Ticket - M2 Evolution Car S.r.l</title>
     <script src="/assets/js/pace/pace.js"></script>
     <link href="{{mix("/assets/css/crater.css")}}" rel="stylesheet" type="text/css">
     <meta name="viewport" content="width=device-width,initial-scale=1">

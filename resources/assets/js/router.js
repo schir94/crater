@@ -43,9 +43,9 @@ import PaymentCreate from './views/payments/Create.vue'
 import PaymentView from './views/payments/View.vue'
 
 // Estimates
-import EstimateIndex from './views/estimates/Index.vue'
-import EstimateCreate from './views/estimates/Create.vue'
-import EstimateView from './views/estimates/View.vue'
+//import EstimateIndex from './views/estimates/Index.vue'
+//import EstimateCreate from './views/estimates/Create.vue'
+//import EstimateView from './views/estimates/View.vue'
 
 // Expenses
 import ExpensesIndex from './views/expenses/Index'
@@ -56,11 +56,11 @@ import UserIndex from './views/users/Index.vue'
 import UserCreate from './views/users/Create.vue'
 
 // Report
-import SalesReports from './views/reports/SalesReports'
-import ExpensesReport from './views/reports/ExpensesReport'
-import ProfitLossReport from './views/reports/ProfitLossReport'
-import TaxReport from './views/reports/TaxReport.vue'
-import ReportLayout from './views/reports/layout/Index.vue'
+//import SalesReports from './views/reports/SalesReports'
+//import ExpensesReport from './views/reports/ExpensesReport'
+//import ProfitLossReport from './views/reports/ProfitLossReport'
+//import TaxReport from './views/reports/TaxReport.vue'
+//import ReportLayout from './views/reports/layout/Index.vue'
 
 // Settings
 import SettingsLayout from './views/settings/SettingsIndex.vue'
@@ -197,7 +197,7 @@ const routes = [
       },
 
       // Estimates
-      {
+      /* {
         path: 'estimates',
         name: 'estimates.index',
         component: EstimateIndex,
@@ -216,7 +216,7 @@ const routes = [
         path: 'estimates/:id/edit',
         name: 'estimates.edit',
         component: EstimateCreate,
-      },
+      }, */
 
       // Invoices
       {
@@ -300,7 +300,7 @@ const routes = [
       },
 
       // Reports
-      {
+      /* {
         path: 'reports',
         component: ReportLayout,
         children: [
@@ -321,7 +321,7 @@ const routes = [
             component: TaxReport,
           },
         ],
-      },
+      }, */
 
       // Settings
       {

@@ -44,6 +44,7 @@ class User extends Authenticatable implements HasMedia
         'website',
         'enable_portal',
         'creator_id',
+        'credit_amount',
     ];
 
     /**
@@ -86,6 +87,11 @@ class User extends Authenticatable implements HasMedia
     public function isSuperAdminOrAdmin()
     {
         return ($this->role == 'super admin') || ($this->role == 'admin');
+    }
+
+    public function isCustomer()
+    {
+        return ($this->role == 'customer');
     }
 
     public static function login($request)
@@ -157,6 +163,11 @@ class User extends Authenticatable implements HasMedia
     public function settings()
     {
         return $this->hasMany(UserSetting::class, 'user_id');
+    }
+
+    public function credits()
+    {
+        return $this->hasOne(Credits::class);
     }
 
     /**
@@ -336,6 +347,7 @@ class User extends Authenticatable implements HasMedia
             'contact_name',
             'website',
             'enable_portal',
+            'credit_amount',
         ]);
 
         $data['creator_id'] = Auth::id();
@@ -375,6 +387,7 @@ class User extends Authenticatable implements HasMedia
             'contact_name',
             'website',
             'enable_portal',
+            'credit_amount',
         ]);
 
         $data['role'] = 'customer';
@@ -397,6 +410,10 @@ class User extends Authenticatable implements HasMedia
         }
 
         $customer = User::with('billingAddress', 'shippingAddress', 'fields')->find($customer->id);
+
+        // if ($request->credits) {
+        //     $customer->credits()->update(['amount' => $request->credits]);
+        // }
 
         return $customer;
     }

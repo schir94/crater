@@ -61,8 +61,8 @@
               required
             >
               <sw-input
-                :invalid="$v.formData.name.$error"
                 v-model="formData.name"
+                :invalid="$v.formData.name.$error"
                 focus
                 type="text"
                 name="name"
@@ -72,14 +72,17 @@
             </sw-input-group>
 
             <sw-input-group
-              :label="$t('customers.primary_contact_name')"
+              :label="$t('customers.credits')"
+              :error="creditError"
               class="md:col-span-3"
+              required
             >
-              <sw-input
-                v-model.trim="formData.contact_name"
-                :label="$t('customers.contact_name')"
-                type="text"
-                tabindex="2"
+              <sw-money
+                v-model="credits"
+                :invalid="$v.formData.credit_amount.$error"
+                :currency="defaultInput"
+                class="relative w-full focus:border focus:border-solid focus:border-primary"
+                @input="$v.formData.credit_amount.$touch()"
               />
             </sw-input-group>
 
@@ -89,12 +92,37 @@
               class="md:col-span-3"
             >
               <sw-input
-                :invalid="$v.formData.email.$error"
                 v-model.trim="formData.email"
+                :invalid="$v.formData.email.$error"
                 type="text"
                 name="email"
                 tabindex="3"
                 @input="$v.formData.email.$touch()"
+              />
+            </sw-input-group>
+
+            <sw-input-group
+              :label="$tc('users.password')"
+              :error="passwordError"
+              required
+              class="md:col-span-3"
+            >
+              <sw-input
+                v-model="formData.password"
+                :invalid="$v.formData.password.$error"
+                type="password"
+                @input="$v.formData.password.$touch()"
+              />
+            </sw-input-group>
+            <sw-input-group
+              :label="$t('customers.primary_contact_name')"
+              class="md:col-span-3"
+            >
+              <sw-input
+                v-model.trim="formData.contact_name"
+                :label="$t('customers.contact_name')"
+                type="text"
+                tabindex="2"
               />
             </sw-input-group>
 
@@ -256,7 +284,7 @@
         <sw-divider class="mb-5 md:mb-8" />
 
         <!-- Billing Address Copy Button  -->
-        <div
+        <!-- <div
           class="flex items-center justify-start mb-6 md:justify-end md:mb-0"
         >
           <div class="p-1">
@@ -273,10 +301,10 @@
               </span>
             </sw-button>
           </div>
-        </div>
+        </div> -->
 
         <!-- Shipping Address  -->
-        <div class="grid grid-cols-5 gap-4 mb-8">
+        <!--         <div class="grid grid-cols-5 gap-4 mb-8">
           <h6 class="col-span-5 sw-section-title lg:col-span-1">
             {{ $t('customers.shipping_address') }}
           </h6>
@@ -393,13 +421,13 @@
             </div>
           </div>
         </div>
-
+ -->
         <sw-divider v-if="customFields.length > 0" class="mb-5 md:mb-8" />
 
         <!-- Custom Fields  -->
         <div v-if="customFields.length > 0" class="grid grid-cols-5 gap-4 mb-8">
           <h6 class="col-span-5 sw-section-title lg:col-span-1">
-            {{ $t('settings.custom_fields.title') }}
+            {{ $t('settings.custom_fields.customer_other_info') }}
           </h6>
 
           <div
@@ -407,16 +435,16 @@
           >
             <sw-input-group
               v-for="(field, index) in customFields"
+              :key="index"
               :label="field.label"
               :required="field.is_required ? true : false"
-              :key="index"
               class="md:col-span-3"
             >
               <component
+                :is="field.type + 'Field'"
                 :type="field.type.label"
                 :field="field"
                 :is-edit="isEdit"
-                :is="field.type + 'Field'"
                 :invalid-fields="invalidFields"
                 :tabindex="23 + index"
                 @update="setCustomFieldValue"
@@ -460,11 +488,14 @@ const {
   email,
   url,
   maxLength,
+  numeric,
+  minValue,
+  requiredIf
 } = require('vuelidate/lib/validators')
 
 export default {
   components: {
-    DocumentDuplicateIcon,
+    DocumentDuplicateIcon
   },
   mixins: [CustomFieldsMixin],
   data() {
@@ -476,12 +507,13 @@ export default {
         name: null,
         contact_name: null,
         email: null,
+        password: null,
         phone: null,
         currency_id: null,
         website: null,
         addresses: [],
+        credit_amount: 0
       },
-      currency: null,
       billing: {
         name: null,
         country_id: null,
@@ -491,7 +523,7 @@ export default {
         zip: null,
         address_street_1: null,
         address_street_2: null,
-        type: 'billing',
+        type: 'billing'
       },
       shipping: {
         name: null,
@@ -502,45 +534,64 @@ export default {
         zip: null,
         address_street_1: null,
         address_street_2: null,
-        type: 'shipping',
+        type: 'shipping'
       },
+
       currencyList: [],
 
       billing_country: null,
       shipping_country: null,
 
       countries: [],
+      defaultInput: {
+        decimal: '.',
+        thousands: ',',
+        precision: 2,
+        masked: false
+      }
     }
   },
   validations: {
     formData: {
       name: {
         required,
-        minLength: minLength(3),
+        minLength: minLength(3)
       },
       email: {
-        email,
+        email
       },
       website: {
-        url,
+        url
       },
+      credit_amount: {
+        required,
+        numeric,
+        maxLength: maxLength(20),
+        minValue: minValue(0)
+      },
+      password: {
+        required: requiredIf(function () {
+          return !this.isEdit
+        }),
+        minLength: minLength(8)
+      }
     },
     billing: {
       address_street_1: {
-        maxLength: maxLength(255),
+        maxLength: maxLength(255)
       },
       address_street_2: {
-        maxLength: maxLength(255),
-      },
+        maxLength: maxLength(255)
+      }
     },
     shipping: {
       address_street_1: {
-        maxLength: maxLength(255),
+        maxLength: maxLength(255)
       },
       address_street_2: {
-        maxLength: maxLength(255),
-      },
-    },
+        maxLength: maxLength(255)
+      }
+    }
   },
   computed: {
     ...mapGetters(['currencies']),
@@ -612,6 +663,21 @@ export default {
         return this.$tc('validation.email_incorrect')
       }
     },
+    passwordError() {
+      if (!this.$v.formData.password.$error) {
+        return ''
+      }
+      if (!this.$v.formData.password.required) {
+        return this.$t('validation.required')
+      }
+      if (!this.$v.formData.password.minLength) {
+        return this.$tc(
+          'validation.password_min_length',
+          this.$v.formData.password.$params.minLength.min,
+          { count: this.$v.formData.password.$params.minLength.min }
+        )
+      }
+    },
     urlError() {
       if (!this.$v.formData.website.$error) {
         return ''
@@ -619,6 +685,15 @@ export default {
 
       if (!this.$v.formData.website.url) {
         return this.$tc('validation.invalid_url')
+      }
+    },
+    creditError() {
+      if (!this.$v.formData.credit_amount.$error) {
+        return ''
+      }
+
+      if (!this.$v.formData.credit_amount.numeric) {
+        return this.$tc('validation.invalid_initial_credit')
       }
     },
     billAddress1Error() {
@@ -657,6 +732,14 @@ export default {
         return this.$t('validation.address_maxlength')
       }
     },
+    credits: {
+      get: function () {
+        return this.formData.credit_amount / 100
+      },
+      set: function (newValue) {
+        this.formData.credit_amount = Math.round(newValue * 100)
+      }
+    }
   },
   watch: {
     billing_country(newCountry) {
@@ -674,7 +757,7 @@ export default {
       } else {
         this.shipping.country_id = null
       }
-    },
+    }
   },
   created() {
     this.fetchInitData()
@@ -692,7 +775,7 @@ export default {
       'addCustomer',
       'fetchCustomer',
       'updateCustomer',
-      'fetchViewCustomer',
+      'fetchViewCustomer'
     ]),
     ...mapActions('notification', ['showNotification']),
     ...mapActions('customFields', ['fetchCustomFields']),
@@ -703,7 +786,7 @@ export default {
 
     async loadCustomer() {
       let params = {
-        id: this.$route.params.id,
+        id: this.$route.params.id
       }
       let response = await this.fetchCustomer(params)
 
@@ -728,6 +811,10 @@ export default {
 
       this.formData.currency_id = response.data.customer.currency_id
       this.currency = response.data.customer.currency
+
+      this.formData.credit_amount = response.data.customer.credit_amount
+        ? response.data.customer.credit_amount
+        : 0
 
       let res = await this.fetchCustomFields({ type: 'Customer', limit: 'all' })
       let customFields = res.data.customFields.data
@@ -788,13 +875,13 @@ export default {
             )
             this.showNotification({
               type: 'success',
-              message: this.$t('customers.updated_message'),
+              message: this.$t('customers.updated_message')
             })
           }
           if (response.data.error) {
             this.showNotification({
               type: 'error',
-              message: this.$t('validation.email_already_taken'),
+              message: this.$t('validation.email_already_taken')
             })
           }
         } else {
@@ -805,7 +892,7 @@ export default {
             )
             this.showNotification({
               type: 'success',
-              message: this.$t('customers.created_message'),
+              message: this.$t('customers.created_message')
             })
           }
         }
@@ -817,11 +904,11 @@ export default {
         if (err.response.data.errors.email) {
           this.showNotification({
             type: 'error',
-            message: this.$t('validation.email_already_taken'),
+            message: this.$t('validation.email_already_taken')
           })
         }
       }
-    },
-  },
+    }
+  }
 }
 </script>

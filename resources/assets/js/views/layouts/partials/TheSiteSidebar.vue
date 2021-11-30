@@ -78,7 +78,7 @@ import {
   CalculatorIcon,
   ChartBarIcon,
   CogIcon,
-  UsersIcon,
+  UsersIcon
 } from '@vue-hero-icons/outline'
 import { mapGetters, mapActions } from 'vuex'
 
@@ -93,7 +93,7 @@ export default {
     CalculatorIcon,
     ChartBarIcon,
     CogIcon,
-    UsersIcon,
+    UsersIcon
   },
 
   computed: {
@@ -105,53 +105,53 @@ export default {
           {
             title: 'navigation.dashboard',
             icon: 'home-icon',
-            route: '/admin/dashboard',
+            route: '/admin/dashboard'
           },
           {
             title: 'navigation.customers',
             icon: 'user-icon',
-            route: '/admin/customers',
+            route: '/admin/customers'
           },
           {
             title: 'navigation.items',
             icon: 'star-icon',
-            route: '/admin/items',
-          },
+            route: '/admin/items'
+          }
         ],
         [
-          {
+          /* {
             title: 'navigation.estimates',
             icon: 'document-icon',
             route: '/admin/estimates',
-          },
+          }, */
           {
             title: 'navigation.invoices',
             icon: 'document-text-icon',
-            route: '/admin/invoices',
+            route: '/admin/invoices'
           },
           {
             title: 'navigation.payments',
             icon: 'credit-card-icon',
-            route: '/admin/payments',
+            route: '/admin/payments'
           },
           {
             title: 'navigation.expenses',
             icon: 'calculator-icon',
-            route: '/admin/expenses',
-          },
+            route: '/admin/expenses'
+          }
         ],
         [
-          {
+          /* {
             title: 'navigation.reports',
             icon: 'chart-bar-icon',
             route: '/admin/reports',
-          },
+          }, */
           {
             title: 'navigation.settings',
             icon: 'cog-icon',
-            route: '/admin/settings',
-          },
-        ],
+            route: '/admin/settings'
+          }
+        ]
       ]
 
       if (this.currentUser.role == 'super admin') {
@@ -159,14 +159,18 @@ export default {
           {
             title: 'navigation.users',
             icon: 'users-icon',
-            route: '/admin/users',
+            route: '/admin/users'
           },
-          ...menu[2],
+          ...menu[2]
         ]
       }
 
+      if (this.currentUser.role == 'customer') {
+        menu = menu.splice(1, 2)
+      }
+
       return menu
-    },
+    }
   },
 
   methods: {
@@ -178,7 +182,7 @@ export default {
     },
     hasStaticUrl(url) {
       return this.$route.path.indexOf(url)
-    },
-  },
+    }
+  }
 }
 </script>

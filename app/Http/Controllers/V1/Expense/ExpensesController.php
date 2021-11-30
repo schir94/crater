@@ -90,10 +90,10 @@ class ExpensesController extends Controller
         ]);
     }
 
-    public function delete(DeleteExpensesRequest $request)
+    public function delete(DeleteExpensesRequest $request, Expense $expense)
     {
-        Expense::destroy($request->ids);
-
+        $expense->deleteExpenses($request->ids);
+        
         return response()->json([
             'success' => true,
         ]);

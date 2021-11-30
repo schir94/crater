@@ -153,7 +153,7 @@
 
 <script>
 import Guid from 'guid'
-import { mapActions, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 import TaxStub from '../../stub/tax'
 import InvoiceStub from '../../stub/invoice'
 import ItemSelect from './ItemSelect'

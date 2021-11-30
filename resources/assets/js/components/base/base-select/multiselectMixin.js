@@ -18,9 +18,7 @@ function includes(str, query) {
 }
 
 function filterOptions(options, search, label, customLabel) {
-  return options.filter((option) =>
-    includes(customLabel(option, label), search)
-  )
+  return options.filter((option) => includes(customLabel(option, label), search))
 }
 
 function stripGroups(options) {
@@ -47,17 +45,10 @@ function filterGroups(search, label, values, groupLabel, customLabel) {
     groups.map((group) => {
       /* istanbul ignore else */
       if (!group[values]) {
-        console.warn(
-          `Options passed to vue-multiselect do not contain groups, despite the config.`
-        )
+        console.warn(`Options passed to vue-multiselect do not contain groups, despite the config.`)
         return []
       }
-      const groupOptions = filterOptions(
-        group[values],
-        search,
-        label,
-        customLabel
-      )
+      const groupOptions = filterOptions(group[values], search, label, customLabel)
 
       return groupOptions.length
         ? {
@@ -68,7 +59,10 @@ function filterGroups(search, label, values, groupLabel, customLabel) {
     })
 }
 
-const flow = (...fns) => (x) => fns.reduce((v, f) => f(v), x)
+const flow =
+  (...fns) =>
+  (x) =>
+    fns.reduce((v, f) => f(v), x)
 
 export default {
   data() {
@@ -337,11 +331,7 @@ export default {
         '[Vue-Multiselect warn]: Max prop should not be used when prop Multiple equals false.'
       )
     }
-    if (
-      this.preselectFirst &&
-      !this.internalValue.length &&
-      this.options.length
-    ) {
+    if (this.preselectFirst && !this.internalValue.length && this.options.length) {
       this.select(this.filteredOptions[0])
     }
 
@@ -367,28 +357,17 @@ export default {
       if (this.internalSearch) {
         options = this.groupValues
           ? this.filterAndFlat(options, normalizedSearch, this.label)
-          : filterOptions(
-              options,
-              normalizedSearch,
-              this.label,
-              this.customLabel
-            )
+          : filterOptions(options, normalizedSearch, this.label, this.customLabel)
       } else {
         options = this.groupValues
           ? flattenOptions(this.groupValues, this.groupLabel)(options)
           : options
       }
 
-      options = this.hideSelected
-        ? options.filter(not(this.isSelected))
-        : options
+      options = this.hideSelected ? options.filter(not(this.isSelected)) : options
 
       /* istanbul ignore else */
-      if (
-        this.taggable &&
-        normalizedSearch.length &&
-        !this.isExistingOption(normalizedSearch)
-      ) {
+      if (this.taggable && normalizedSearch.length && !this.isExistingOption(normalizedSearch)) {
         if (this.tagPosition === 'bottom') {
           options.push({ isTag: true, label: search })
         } else {
@@ -406,9 +385,7 @@ export default {
       }
     },
     optionKeys() {
-      const options = this.groupValues
-        ? this.flatAndStrip(this.options)
-        : this.options
+      const options = this.groupValues ? this.flatAndStrip(this.options) : this.options
       return options.map((element) =>
         this.customLabel(element, this.label).toString().toLowerCase()
       )
@@ -456,13 +433,7 @@ export default {
      */
     filterAndFlat(options, search, label) {
       return flow(
-        filterGroups(
-          search,
-          label,
-          this.groupValues,
-          this.groupLabel,
-          this.customLabel
-        ),
+        filterGroups(search, label, this.groupValues, this.groupLabel, this.customLabel),
         flattenOptions(this.groupValues, this.groupLabel)
       )(options)
     },
@@ -472,10 +443,7 @@ export default {
      * @returns {Array} returns a flat options list without group labels
      */
     flatAndStrip(options) {
-      return flow(
-        flattenOptions(this.groupValues, this.groupLabel),
-        stripGroups
-      )(options)
+      return flow(flattenOptions(this.groupValues, this.groupLabel), stripGroups)(options)
     },
     /**
      * Updates the search value
@@ -554,8 +522,7 @@ export default {
       )
         return
       /* istanbul ignore else */
-      if (this.max && this.multiple && this.internalValue.length === this.max)
-        return
+      if (this.max && this.multiple && this.internalValue.length === this.max) return
       /* istanbul ignore else */
       if (key === 'Tab' && !this.pointerDirty) return
       if (option.isTag) {
@@ -607,8 +574,7 @@ export default {
         this.$emit('input', newValue, this.id)
       } else {
         const optionsToAdd = group[this.groupValues].filter(
-          (option) =>
-            !(this.isOptionDisabled(option) || this.isSelected(option))
+          (option) => !(this.isOptionDisabled(option) || this.isSelected(option))
         )
 
         this.$emit('select', optionsToAdd, this.id)
@@ -685,10 +651,7 @@ export default {
         Array.isArray(this.internalValue) &&
         this.internalValue.length
       ) {
-        this.removeElement(
-          this.internalValue[this.internalValue.length - 1],
-          false
-        )
+        this.removeElement(this.internalValue[this.internalValue.length - 1], false)
       }
     },
     /**
@@ -701,11 +664,7 @@ export default {
 
       this.adjustPosition()
       /* istanbul ignore else  */
-      if (
-        this.groupValues &&
-        this.pointer === 0 &&
-        this.filteredOptions.length
-      ) {
+      if (this.groupValues && this.pointer === 0 && this.filteredOptions.length) {
         this.pointer = 1
       }
 
@@ -754,8 +713,7 @@ export default {
       if (typeof window === 'undefined') return
 
       const spaceAbove = this.$el.getBoundingClientRect().top
-      const spaceBelow =
-        window.innerHeight - this.$el.getBoundingClientRect().bottom
+      const spaceBelow = window.innerHeight - this.$el.getBoundingClientRect().bottom
       const hasEnoughSpaceBelow = spaceBelow > this.maxHeight
 
       if (

@@ -171,6 +171,23 @@
         </sw-table-column>
 
         <sw-table-column
+          :sortable="false"
+          :label="$t('customers.credits')"
+          show="credit_amount"
+        >
+          <template slot-scope="row">
+            <span> {{ $t('customers.credits') }} </span>
+            <div
+              v-html="
+                row.credit_amount
+                  ? $utils.formatMoney(row.credit_amount, row.currency)
+                  : 0
+              "
+            />
+          </template>
+        </sw-table-column>
+
+        <sw-table-column
           :sortable="true"
           :filterable="true"
           :label="$t('customers.display_name')"

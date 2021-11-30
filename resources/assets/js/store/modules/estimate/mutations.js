@@ -32,9 +32,7 @@ export default {
   },
 
   [types.UPDATE_ESTIMATE](state, data) {
-    let pos = state.estimates.findIndex(
-      (estimate) => estimate.id === data.estimate.id
-    )
+    let pos = state.estimates.findIndex((estimate) => estimate.id === data.estimate.id)
 
     state.estimates[pos] = data.estimate
   },

@@ -67,14 +67,10 @@ export default {
       this.setRemainingCustomFieldsValue(true)
     },
     setCustomFieldValue(data) {
-      let position = this.formData.customFields.findIndex(
-        (field) => field.id == data.field.cfid
-      )
+      let position = this.formData.customFields.findIndex((field) => field.id == data.field.cfid)
 
       // check field has value so removed in invalidFields array
-      let indexInInvalidField = this.invalidFields.findIndex(
-        (field) => field.id == data.field.cfid
-      )
+      let indexInInvalidField = this.invalidFields.findIndex((field) => field.id == data.field.cfid)
       if (indexInInvalidField >= 0) {
         if (data.value) {
           this.invalidFields.splice(indexInInvalidField, 1)
@@ -112,8 +108,7 @@ export default {
     getInvalidFields() {
       return this.formData.customFields.filter(
         (field) =>
-          field.isRequired &&
-          (field.value == null || field.value == undefined || field.value == '')
+          field.isRequired && (field.value == null || field.value == undefined || field.value == '')
       )
     },
     touchCustomField() {

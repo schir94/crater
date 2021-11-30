@@ -8,11 +8,9 @@ export const fetchCustomers = ({ commit, dispatch, state }, params) => {
       .then((response) => {
         commit(types.BOOTSTRAP_CUSTOMERS, response.data.customers.data)
         commit(types.SET_TOTAL_CUSTOMERS, response.data.customerTotalCount)
-        commit(
-          'search/' + searchTypes.SET_CUSTOMER_LISTS,
-          response.data.customers.data,
-          { root: true }
-        )
+        commit('search/' + searchTypes.SET_CUSTOMER_LISTS, response.data.customers.data, {
+          root: true,
+        })
         resolve(response)
       })
       .catch((err) => {

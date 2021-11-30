@@ -155,7 +155,7 @@ class Invoice extends Model implements HasMedia
         } elseif ($this->sent) {
             return self::STATUS_SENT;
         } else {
-            return self::STATUS_DRAFT;
+            return self::STATUS_SENT;
         }
     }
 
@@ -335,7 +335,8 @@ class Invoice extends Model implements HasMedia
         $data = $request->except('items', 'taxes');
 
         $data['creator_id'] = Auth::id();
-        $data['status'] = Invoice::STATUS_DRAFT;
+        //$data['status'] = Invoice::STATUS_DRAFT;
+        $data['status'] = Invoice::STATUS_SENT;
         $data['company_id'] = $request->header('company');
         $data['paid_status'] = Invoice::STATUS_UNPAID;
         $data['tax_per_item'] = CompanySetting::getSetting('tax_per_item', $request->header('company')) ?? 'NO ';

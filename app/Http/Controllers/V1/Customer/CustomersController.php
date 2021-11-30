@@ -2,11 +2,12 @@
 
 namespace Crater\Http\Controllers\V1\Customer;
 
-use Crater\Http\Controllers\Controller;
-use Crater\Http\Requests;
 use Crater\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Auth;
+use Crater\Http\Controllers\Controller;
+use Crater\Http\Requests\CustomerRequest;
 
 class CustomersController extends Controller
 {
@@ -51,14 +52,17 @@ class CustomersController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Requests\CustomerRequest $request)
+    public function store(CustomerRequest $request)
     {
-        $customer = User::createCustomer($request);
+        //if (Auth::user()->isSuperAdminOrAdmin()) {
+            $customer = User::createCustomer($request);
 
-        return response()->json([
-            'customer' => $customer,
-            'success' => true,
-        ]);
+            return response()->json([
+                'customer' => $customer,
+                'success' => true,
+            ]);
+        //}
+
     }
 
     /**
@@ -91,7 +95,7 @@ class CustomersController extends Controller
      * @param  \Crater\Models\User $customer
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Requests\CustomerRequest $request, User $customer)
+    public function update(CustomerRequest $request, User $customer)
     {
         $customer = User::updateCustomer($request, $customer);
 

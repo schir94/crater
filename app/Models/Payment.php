@@ -141,6 +141,21 @@ class Payment extends Model implements HasMedia
         $data['company_id'] = $request->header('company');
         $data['creator_id'] = Auth::id();
 
+        //Decrease customer credit
+        if ($request->has('user_id') && $request->user_id != null) {
+            $user = User::find($request->user_id);
+
+            if ($user->credit_amount < $data['amount']) {
+                return [
+                    'error' => 'not_enough_credit',
+                ];
+            }
+
+            $user->credit_amount = $user->credit_amount - $data['amount'];
+
+            $user->save();
+        }
+
         if ($request->has('invoice_id') && $request->invoice_id != null) {
             $invoice = Invoice::find($request->invoice_id);
             if ($invoice && $invoice->due_amount == $request->amount) {
@@ -185,6 +200,21 @@ class Payment extends Model implements HasMedia
     {
         $oldAmount = $this->amount;
 
+        //Update credit based on new amount
+        if ($request->has('user_id') && $request->user_id != null) {
+            $user = User::find($request->user_id);
+
+            if ($user->credit_amount < $request->amount) {
+                return [
+                    'error' => 'not_enough_credit',
+                ];
+            }
+
+            $user->credit_amount = ($user->credit_amount + $oldAmount) - $request->amount;
+
+            $user->save();
+        }
+
         if ($request->has('invoice_id') && $request->invoice_id && ($oldAmount != $request->amount)) {
             $amount = (int)$request->amount - (int)$oldAmount;
             $invoice = Invoice::find($request->invoice_id);
@@ -195,7 +225,7 @@ class Payment extends Model implements HasMedia
                     'error' => 'invalid_amount',
                 ];
             }
-
+            
             if ($invoice->due_amount == 0) {
                 $invoice->status = Invoice::STATUS_COMPLETED;
                 $invoice->paid_status = Invoice::STATUS_PAID;
@@ -230,7 +260,16 @@ class Payment extends Model implements HasMedia
     public static function deletePayments($ids)
     {
         foreach ($ids as $id) {
-            $payment = Payment::find($id);
+            $payment = Payment::with('user')->find($id);
+            
+            //Update credit based on new amount
+            if ($payment->user) {
+    
+                $payment->user->credit_amount = $payment->user->credit_amount + $payment->amount;
+
+                $payment->user->save();
+
+            }
 
             if ($payment->invoice_id != null) {
                 $invoice = Invoice::find($payment->invoice_id);
@@ -242,7 +281,8 @@ class Payment extends Model implements HasMedia
                     $invoice->paid_status = Invoice::STATUS_PARTIALLY_PAID;
                 }
 
-                $invoice->status = $invoice->getPreviousStatus();
+                //$invoice->status = $invoice->getPreviousStatus();
+                $invoice->status = Invoice::STATUS_SENT;
                 $invoice->save();
             }
 
