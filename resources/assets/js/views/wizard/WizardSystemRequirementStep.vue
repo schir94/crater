@@ -12,7 +12,7 @@
           <div class="col-span-2 text-sm">
             {{
               $t('wizard.req.php_req_version', {
-                version: phpSupportInfo.minimum,
+                version: phpSupportInfo.minimum
               })
             }}
           </div>
@@ -77,14 +77,14 @@
 import { ArrowRightIcon } from '@vue-hero-icons/solid'
 export default {
   components: {
-    ArrowRightIcon,
+    ArrowRightIcon
   },
   data() {
     return {
       requirements: null,
       phpSupportInfo: null,
       isLoading: false,
-      isShow: true,
+      isShow: true
     }
   },
   computed: {
@@ -99,7 +99,7 @@ export default {
         return this.requirements && this.phpSupportInfo.supported && isRequired
       }
       return false
-    },
+    }
   },
   methods: {
     listToggle() {
@@ -123,7 +123,7 @@ export default {
       this.isLoading = true
       await this.$emit('next')
       this.isLoading = false
-    },
-  },
+    }
+  }
 }
 </script>

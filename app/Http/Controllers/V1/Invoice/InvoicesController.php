@@ -61,6 +61,13 @@ class InvoicesController extends Controller
      */
     public function store(InvoicesRequest $request)
     {
+
+        $user = Auth::user();
+
+        if ($user->isCustomer()) {
+            return response('Unauthorized.', 401);
+        }
+
         $invoice = Invoice::createInvoice($request);
 
         if ($request->has('invoiceSend')) {
@@ -82,6 +89,12 @@ class InvoicesController extends Controller
      */
     public function show(Invoice $invoice)
     {
+        $user = Auth::user();
+
+        if ($user->isCustomer() && $invoice->user_id !== $user->id) {
+            return response('Unauthorized.', 401);
+        }
+
         $invoice->load([
             'items',
             'items.taxes',
@@ -108,6 +121,12 @@ class InvoicesController extends Controller
      */
     public function update(InvoicesRequest $request, Invoice $invoice)
     {
+        $user = Auth::user();
+
+        if ($user->isCustomer() && $invoice->user_id !== $user->id) {
+            return response('Unauthorized.', 401);
+        }
+
         $invoice = $invoice->updateInvoice($request);
 
         GenerateInvoicePdfJob::dispatch($invoice, true);
@@ -126,6 +145,12 @@ class InvoicesController extends Controller
      */
     public function delete(DeleteInvoiceRequest $request)
     {
+        $user = Auth::user();
+
+        if ($user->isCustomer()) {
+            return response('Unauthorized.', 401);
+        }
+
         Invoice::destroy($request->ids);
 
         return response()->json([

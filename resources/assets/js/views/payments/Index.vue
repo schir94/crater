@@ -6,7 +6,7 @@
         <sw-breadcrumb-item :title="$tc('payments.payment', 2)" to="#" active />
       </sw-breadcrumb>
 
-      <template slot="actions">
+      <template slot="actions" v-if="!isCustomer">
         <sw-button
           v-show="totalPayments"
           variant="primary-outline"
@@ -73,8 +73,9 @@
           class="absolute text-sm leading-snug text-gray-900 cursor-pointer"
           style="top: 10px; right: 15px"
           @click="clearFilter"
-          >{{ $t('general.clear_all') }}</label
         >
+          {{ $t('general.clear_all') }}
+        </label>
       </sw-filter-wrapper>
     </slide-y-up-transition>
 
@@ -102,8 +103,10 @@
         class="relative flex items-center justify-between h-10 mt-5 list-none border-b-2 border-gray-200 border-solid"
       >
         <p class="text-sm">
-          {{ $t('general.showing') }}: <b>{{ payments.length }}</b>
-          {{ $t('general.of') }} <b>{{ totalPayments }}</b>
+          {{ $t('general.showing') }}:
+          <b>{{ payments.length }}</b>
+          {{ $t('general.of') }}
+          <b>{{ totalPayments }}</b>
         </p>
 
         <sw-transition type="fade">
@@ -236,9 +239,7 @@
         <sw-table-column :sortable="true" :label="$t('payments.amount')">
           <template slot-scope="row">
             <span>{{ $t('payments.amount') }}</span>
-            <div>
-              {{ $utils.formatMoney(row.amount, row.user.currency) }}
-            </div>
+            <div v-html="$utils.formatMoney(row.amount, row.user.currency)" />
           </template>
         </sw-table-column>
 
@@ -246,6 +247,7 @@
           :sortable="false"
           :filterable="false"
           cell-class="action-dropdown"
+          v-if="!isCustomer"
         >
           <template slot-scope="row">
             <span>{{ $t('payments.action') }}</span>
@@ -290,7 +292,7 @@ import {
   ChevronDownIcon,
   EyeIcon,
   PencilIcon,
-  TrashIcon,
+  TrashIcon
 } from '@vue-hero-icons/solid'
 
 export default {
@@ -302,7 +304,7 @@ export default {
     ChevronDownIcon,
     EyeIcon,
     PencilIcon,
-    TrashIcon,
+    TrashIcon
   },
   data() {
     return {
@@ -313,8 +315,8 @@ export default {
       filters: {
         customer: '',
         payment_mode: '',
-        payment_number: '',
-      },
+        payment_number: ''
+      }
     }
   },
   computed: {
@@ -333,8 +335,10 @@ export default {
       'totalPayments',
       'payments',
       'selectAllField',
-      'paymentModes',
+      'paymentModes'
     ]),
+
+    ...mapGetters('user', ['isCustomer']),
 
     selectField: {
       get: function () {
@@ -342,7 +346,7 @@ export default {
       },
       set: function (val) {
         this.selectPayment(val)
-      },
+      }
     },
 
     selectAllFieldStatus: {
@@ -351,15 +355,15 @@ export default {
       },
       set: function (val) {
         this.setSelectAllState(val)
-      },
-    },
+      }
+    }
   },
 
   watch: {
     filters: {
       handler: 'setFilters',
-      deep: true,
-    },
+      deep: true
+    }
   },
 
   mounted() {
@@ -380,7 +384,7 @@ export default {
       'deletePayment',
       'deleteMultiplePayments',
       'setSelectAllState',
-      'fetchPaymentModes',
+      'fetchPaymentModes'
     ]),
 
     ...mapActions('notification', ['showNotification']),
@@ -395,7 +399,7 @@ export default {
         payment_number: this.filters.payment_number,
         orderByField: sort.fieldName || 'created_at',
         orderBy: sort.order || 'desc',
-        page,
+        page
       }
 
       this.isRequestOngoing = true
@@ -407,8 +411,8 @@ export default {
         pagination: {
           totalPages: response.data.payments.last_page,
           currentPage: page,
-          count: response.data.payments.count,
-        },
+          count: response.data.payments.count
+        }
       }
     },
 
@@ -430,7 +434,7 @@ export default {
       this.filters = {
         customer: '',
         payment_mode: '',
-        payment_number: '',
+        payment_number: ''
       }
     },
 
@@ -455,22 +459,22 @@ export default {
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>`,
         showCancelButton: true,
-        showConfirmButton: true,
-      }).then(async (result) => {
+        showConfirmButton: true
+      }).then(async result => {
         if (result.value) {
           let res = await this.deletePayment({ ids: [id] })
 
           if (res.data.success) {
             this.showNotification({
               type: 'success',
-              message: this.$tc('payments.deleted_message', 1),
+              message: this.$tc('payments.deleted_message', 1)
             })
             this.$refs.table.refresh()
             return true
           }
           this.showNotification({
             type: 'error',
-            message: res.data.message,
+            message: res.data.message
           })
           return true
         }
@@ -486,20 +490,20 @@ export default {
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>`,
         showCancelButton: true,
-        showConfirmButton: true,
-      }).then(async (result) => {
+        showConfirmButton: true
+      }).then(async result => {
         if (result.value) {
           let request = await this.deleteMultiplePayments()
           if (request.data.success) {
             this.showNotification({
               type: 'success',
-              message: this.$tc('payments.deleted_message', 2),
+              message: this.$tc('payments.deleted_message', 2)
             })
             this.$refs.table.refresh()
           } else if (request.data.error) {
             this.showNotification({
               type: 'error',
-              message: request.data.message,
+              message: request.data.message
             })
           }
         }
@@ -518,11 +522,11 @@ export default {
 
     async removeSelectedItems() {
       this.$refs.Delete_modal.close()
-      await this.selectedRow.forEach((row) => {
+      await this.selectedRow.forEach(row => {
         this.deletePayment(this.id)
       })
       this.$refs.table.refresh()
-    },
-  },
+    }
+  }
 }
 </script>

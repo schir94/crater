@@ -2,6 +2,7 @@
 
 namespace Crater\Http\Controllers\V1\Expense;
 
+use Auth;
 use Crater\Http\Controllers\Controller;
 use Crater\Http\Requests\DeleteExpensesRequest;
 use Crater\Http\Requests\ExpenseRequest;
@@ -17,6 +18,8 @@ class ExpensesController extends Controller
      */
     public function index(Request $request)
     {
+        $user = Auth::user();
+
         $limit = $request->has('limit') ? $request->limit : 10;
 
         $expenses = Expense::with('category', 'creator', 'fields')
@@ -32,13 +35,18 @@ class ExpensesController extends Controller
                 'orderByField',
                 'orderBy',
             ]))
-            ->whereCompany($request->header('company'))
-            ->select('expenses.*', 'expense_categories.name', 'users.name as user_name')
+            ->whereCompany($request->header('company'));
+
+        if ($user->isCustomer()) {
+            $expenses = $expenses->where('expenses.user_id', $user->id);
+        }
+
+        $expenses = $expenses->select('expenses.*', 'expense_categories.name', 'users.name as user_name')
             ->paginateData($limit);
 
         return response()->json([
             'expenses' => $expenses,
-            'expenseTotalCount' => Expense::count(),
+            'expenseTotalCount' => $expenses->count(),
         ]);
     }
 
@@ -50,6 +58,12 @@ class ExpensesController extends Controller
      */
     public function store(ExpenseRequest $request)
     {
+        $user = Auth::user();
+
+        if ($user->isCustomer()) {
+            return response('Unauthorized.', 401);
+        }
+
         $expense = Expense::createExpense($request);
 
         return response()->json([
@@ -66,6 +80,12 @@ class ExpensesController extends Controller
      */
     public function show(Expense $expense)
     {
+        $user = Auth::user();
+
+        if ($user->isCustomer() && $expense->user_id !== $user->id) {
+            return response('Unauthorized.', 401);
+        }
+
         $expense->load('creator', 'fields.customField');
 
         return response()->json([
@@ -82,6 +102,12 @@ class ExpensesController extends Controller
      */
     public function update(ExpenseRequest $request, Expense $expense)
     {
+        $user = Auth::user();
+
+        if ($user->isCustomer()) {
+            return response('Unauthorized.', 401);
+        }
+
         $expense->updateExpense($request);
 
         return response()->json([
@@ -92,8 +118,14 @@ class ExpensesController extends Controller
 
     public function delete(DeleteExpensesRequest $request, Expense $expense)
     {
+        $user = Auth::user();
+
+        if ($user->isCustomer()) {
+            return response('Unauthorized.', 401);
+        }
+
         $expense->deleteExpenses($request->ids);
-        
+
         return response()->json([
             'success' => true,
         ]);

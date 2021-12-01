@@ -3,8 +3,6 @@
     <dashboard-stats />
     <dashboard-chart />
     <dashboard-table />
-
-    {{ currentUser }}
   </base-page>
 </template>
 
@@ -18,15 +16,15 @@ export default {
   components: {
     DashboardStats,
     DashboardChart,
-    DashboardTable,
+    DashboardTable
   },
   computed: {
     ...mapGetters('user', ['currentUser'])
   },
-  beforeMount(){
+  beforeMount() {
     if (this.currentUser.role == 'customer') {
-       this.$router.push('/admin/invoices')
+      this.$router.push('/admin/invoices')
     }
-  },
+  }
 }
 </script>

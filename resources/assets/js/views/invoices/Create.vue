@@ -272,8 +272,9 @@
           <div class="flex items-center justify-between w-full">
             <label
               class="text-sm font-semibold leading-5 text-gray-500 uppercase"
-              >{{ $t('invoices.sub_total') }}</label
             >
+              {{ $t('invoices.sub_total') }}
+            </label>
             <label
               class="flex items-center justify-center m-0 text-lg text-black uppercase"
             >
@@ -287,7 +288,8 @@
           >
             <label
               class="m-0 text-sm font-semibold leading-5 text-gray-500 uppercase"
-              >{{ tax.name }} - {{ tax.percent }}%
+            >
+              {{ tax.name }} - {{ tax.percent }}%
             </label>
             <label
               class="flex items-center justify-center m-0 text-lg text-black uppercase"
@@ -302,8 +304,9 @@
           >
             <label
               class="text-sm font-semibold leading-5 text-gray-500 uppercase"
-              >{{ $t('invoices.discount') }}</label
             >
+              {{ $t('invoices.discount') }}
+            </label>
             <div class="flex" style="width: 105px" role="group">
               <sw-input
                 v-model="discount"
@@ -396,6 +399,7 @@ import InvoiceItem from './Item'
 import CustomerSelect from './CustomerSelect'
 import InvoiceStub from '../../stub/invoice'
 import { mapActions, mapGetters } from 'vuex'
+import store from '@/store/index.js'
 import moment from 'moment'
 import Guid from 'guid'
 import TaxStub from '../../stub/tax'
@@ -405,7 +409,7 @@ import {
   ChevronDownIcon,
   PencilIcon,
   ShoppingCartIcon,
-  HashtagIcon,
+  HashtagIcon
 } from '@vue-hero-icons/solid'
 import CustomFieldsMixin from '../../mixins/customFields'
 import invoice from '../../stub/invoice'
@@ -414,7 +418,7 @@ const {
   required,
   between,
   maxLength,
-  numeric,
+  numeric
 } = require('vuelidate/lib/validators')
 
 export default {
@@ -427,10 +431,19 @@ export default {
     ChevronDownIcon,
     PencilIcon,
     ShoppingCartIcon,
-    HashtagIcon,
+    HashtagIcon
   },
   mixins: [CustomFieldsMixin],
 
+  beforeRouteEnter: (to, from, next) => {
+    const currentUser = store.state.user.currentUser
+    if (
+      to.matched.some(record => record.meta.mustBeAdmiOrSuperAdmin) &&
+      (currentUser.role == 'super admin' || currentUser.role == 'admin')
+    ) {
+      next() //proceed to the route
+    } else next('/admin/invoices')
+  },
   data() {
     return {
       newInvoice: {
@@ -451,10 +464,10 @@ export default {
           {
             ...InvoiceStub,
             id: Guid.raw(),
-            taxes: [{ ...TaxStub, id: Guid.raw() }],
-          },
+            taxes: [{ ...TaxStub, id: Guid.raw() }]
+          }
         ],
-        taxes: [],
+        taxes: []
       },
       selectedCurrency: '',
       taxPerItem: null,
@@ -470,9 +483,9 @@ export default {
         'customerCustom',
         'company',
         'invoice',
-        'invoiceCustom',
+        'invoiceCustom'
       ],
-      customerId: null,
+      customerId: null
     }
   },
 
@@ -480,25 +493,25 @@ export default {
     return {
       newInvoice: {
         invoice_date: {
-          required,
+          required
         },
         due_date: {
-          required,
+          required
         },
         discount_val: {
-          between: between(0, this.subtotal),
+          between: between(0, this.subtotal)
         },
         reference_number: {
-          maxLength: maxLength(255),
-        },
+          maxLength: maxLength(255)
+        }
       },
       selectedCustomer: {
-        required,
+        required
       },
       invoiceNumAttribute: {
         required,
-        numeric,
-      },
+        numeric
+      }
     }
   },
 
@@ -512,10 +525,12 @@ export default {
     ...mapGetters('invoice', [
       'getTemplateName',
       'selectedCustomer',
-      'selectedNote',
+      'selectedNote'
     ]),
 
     ...mapGetters('invoiceTemplate', ['getInvoiceTemplates']),
+
+    ...mapGetters('user', ['currentUser']),
 
     currency() {
       return this.selectedCurrency
@@ -561,7 +576,7 @@ export default {
         }
 
         this.newInvoice.discount = newValue
-      },
+      }
     },
 
     totalSimpleTax() {
@@ -603,9 +618,9 @@ export default {
     allTaxes() {
       let taxes = []
 
-      this.newInvoice.items.forEach((item) => {
-        item.taxes.forEach((tax) => {
-          let found = taxes.find((_tax) => {
+      this.newInvoice.items.forEach(item => {
+        item.taxes.forEach(tax => {
+          let found = taxes.find(_tax => {
             return _tax.tax_type_id === tax.tax_type_id
           })
 
@@ -616,7 +631,7 @@ export default {
               tax_type_id: tax.tax_type_id,
               amount: tax.amount,
               percent: tax.percent,
-              name: tax.name,
+              name: tax.name
             })
           }
         })
@@ -665,7 +680,7 @@ export default {
       if (!this.$v.newInvoice.reference_number.maxLength) {
         return this.$tc('validation.ref_number_maxlength')
       }
-    },
+    }
   },
 
   watch: {
@@ -688,7 +703,7 @@ export default {
         this.newInvoice.discount_val =
           (this.newInvoice.discount * newValue) / 100
       }
-    },
+    }
   },
 
   created() {
@@ -710,7 +725,7 @@ export default {
       'selectCustomer',
       'updateInvoice',
       'resetSelectedNote',
-      'setTemplate',
+      'setTemplate'
     ]),
 
     ...mapActions('invoiceTemplate', ['fetchInvoiceTemplates']),
@@ -755,7 +770,7 @@ export default {
       if (!this.isEdit) {
         let response = await this.fetchCompanySettings([
           'discount_per_item',
-          'tax_per_item',
+          'tax_per_item'
         ])
 
         if (response.data) {
@@ -768,12 +783,12 @@ export default {
         this.fetchItems({
           filter: {},
           orderByField: '',
-          orderBy: '',
+          orderBy: ''
         }),
         this.fetchInvoiceTemplates(),
         this.resetSelectedNote(),
         this.getInvoiceNumber(),
-        this.fetchCompanySettings(['invoice_auto_generate']),
+        this.fetchCompanySettings(['invoice_auto_generate'])
       ])
         .then(async ([res1, res2, res3, res4, res5]) => {
           if (
@@ -794,7 +809,7 @@ export default {
           // this.taxPerItem = res5.data.tax_per_item
           this.isLoadingData = false
         })
-        .catch((error) => {
+        .catch(error => {
           console.log(error)
         })
     },
@@ -807,9 +822,9 @@ export default {
           this.fetchInvoice(this.$route.params.id),
           this.fetchCustomFields({
             type: 'Invoice',
-            limit: 'all',
+            limit: 'all'
           }),
-          this.fetchTaxTypes({ limit: 'all' }),
+          this.fetchTaxTypes({ limit: 'all' })
         ])
           .then(async ([res1, res2]) => {
             if (res1.data) {
@@ -841,7 +856,7 @@ export default {
             }
             this.isLoadingInvoice = false
           })
-          .catch((error) => {
+          .catch(error => {
             console.log(error)
           })
 
@@ -862,7 +877,7 @@ export default {
       this.openModal({
         title: this.$t('general.choose_template'),
         componentName: 'InvoiceTemplate',
-        data: this.getInvoiceTemplates,
+        data: this.getInvoiceTemplates
       })
     },
 
@@ -870,7 +885,7 @@ export default {
       this.newInvoice.items.push({
         ...InvoiceStub,
         id: Guid.raw(),
-        taxes: [{ ...TaxStub, id: Guid.raw() }],
+        taxes: [{ ...TaxStub, id: Guid.raw() }]
       })
     },
 
@@ -901,7 +916,7 @@ export default {
         total: this.total,
         tax: this.totalTax,
         user_id: null,
-        template_name: this.getTemplateName,
+        template_name: this.getTemplateName
       }
 
       if (this.selectedCustomer != null) {
@@ -918,42 +933,42 @@ export default {
 
     submitCreate(data) {
       this.addInvoice(data)
-        .then((res) => {
+        .then(res => {
           if (res.data) {
             this.$router.push(`/admin/invoices/${res.data.invoice.id}/view`)
             this.showNotification({
               type: 'success',
-              message: this.$t('invoices.created_message'),
+              message: this.$t('invoices.created_message')
             })
           }
 
           this.isLoading = false
         })
-        .catch((err) => {
+        .catch(err => {
           this.isLoading = false
         })
     },
 
     submitUpdate(data) {
       this.updateInvoice(data)
-        .then((res) => {
+        .then(res => {
           this.isLoading = false
           if (res.data.success) {
             this.$router.push(`/admin/invoices/${res.data.invoice.id}/view`)
             this.showNotification({
               type: 'success',
-              message: this.$t('invoices.updated_message'),
+              message: this.$t('invoices.updated_message')
             })
           }
 
           if (res.data.error === 'invalid_due_amount') {
             this.showNotification({
               type: 'error',
-              message: this.$t('invoices.invalid_due_amount_message'),
+              message: this.$t('invoices.invalid_due_amount_message')
             })
           }
         })
-        .catch((err) => {
+        .catch(err => {
           this.isLoading = false
         })
     },
@@ -984,7 +999,7 @@ export default {
         percent: selectedTax.percent,
         compound_tax: selectedTax.compound_tax,
         tax_type_id: selectedTax.id,
-        amount,
+        amount
       })
 
       if (this.$refs) {
@@ -1003,7 +1018,7 @@ export default {
 
       window.hub.$emit('checkItems')
       let isValid = true
-      this.newInvoice.items.forEach((item) => {
+      this.newInvoice.items.forEach(item => {
         if (!item.valid) {
           isValid = false
         }
@@ -1021,8 +1036,8 @@ export default {
     onSelectNote(data) {
       this.newInvoice.notes = '' + data.notes
       this.$refs.notePopup.close()
-    },
-  },
+    }
+  }
 }
 </script>
 

@@ -10,27 +10,27 @@ module.exports = {
     './node_modules/\\@bytefury/spacewind/src/**/*.vue',
     './node_modules/\\@bytefury/spacewind/plugin/**/*.js',
     'flatpickr/**/*.js',
-    './public/js/pace/**/*.js',
+    './public/js/pace/**/*.js'
   ],
   theme: {
     extend: {
       fontFamily: {
-        base: ['Poppins', 'sans-serif'],
+        base: ['Poppins', 'sans-serif']
       },
       colors: {
         primary: {
-          50: '#F7F6FD',
-          100: '#EEEEFB',
-          200: '#D5D4F5',
-          300: '#BCB9EF',
-          400: '#8A85E4',
-          500: '#5851D8',
-          600: '#4F49C2',
-          700: '#353182',
-          800: '#282461',
-          900: '#1A1841',
+          50: '#E52444',
+          100: '#DB1A3A',
+          200: '#C91835',
+          300: '#B71530',
+          400: '#A2132B',
+          500: '#921127',
+          600: '#800F22',
+          700: '#6E0D1D',
+          800: '#5B0B18',
+          900: '#490914'
         },
-        black: '#040405',
+        black: '#040405'
       },
       spacing: {
         7: '1.75rem',
@@ -38,12 +38,12 @@ module.exports = {
         72: '18rem',
         80: '20rem',
         88: '22rem',
-        96: '24rem',
+        96: '24rem'
       },
       screens: {
-        xxl: '1440px',
-      },
-    },
+        xxl: '1440px'
+      }
+    }
   },
   variants: {
     textColor: ['responsive', 'hover', 'focus', 'active', 'visited'],
@@ -51,41 +51,41 @@ module.exports = {
     borderRadius: ['responsive', 'hover', 'first', 'last'],
     boxShadow: ['responsive', 'hover', 'focus', 'active', 'group-hover'],
     borderStyle: ['responsive', 'hover', 'first', 'last'],
-    borderWidth: ['responsive', 'last', 'hover', 'focus'],
+    borderWidth: ['responsive', 'last', 'hover', 'focus']
   },
   plugins: [
     require('@bytefury/spacewind/plugin'),
 
     plugin(({ config, addBase }) => {
       let craterDefaultTypography = {
-        fontFamily: config('theme.fontFamily.base'),
+        fontFamily: config('theme.fontFamily.base')
       }
       addBase({
         '.h1': {
-          ...craterDefaultTypography,
+          ...craterDefaultTypography
         },
         '.h2': {
-          ...craterDefaultTypography,
+          ...craterDefaultTypography
         },
         '.h3': {
-          ...craterDefaultTypography,
+          ...craterDefaultTypography
         },
         '.h4': {
-          ...craterDefaultTypography,
+          ...craterDefaultTypography
         },
         '.h5': {
-          ...craterDefaultTypography,
+          ...craterDefaultTypography
         },
         '.h6': {
-          ...craterDefaultTypography,
+          ...craterDefaultTypography
         },
         '.page-title': {
-          ...craterDefaultTypography,
+          ...craterDefaultTypography
         },
         '.section-title': {
-          ...craterDefaultTypography,
-        },
+          ...craterDefaultTypography
+        }
       })
-    }),
-  ],
+    })
+  ]
 }

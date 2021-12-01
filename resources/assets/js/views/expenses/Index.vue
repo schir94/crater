@@ -8,7 +8,7 @@
         <sw-breadcrumb-item :title="$tc('expenses.expense', 2)" to="#" active />
       </sw-breadcrumb>
 
-      <template slot="actions">
+      <template slot="actions" v-if="!isCustomer">
         <sw-button
           v-show="totalExpenses"
           size="lg"
@@ -87,8 +87,9 @@
           class="absolute text-sm leading-snug text-black cursor-pointer"
           style="top: 10px; right: 15px"
           @click="clearFilter"
-          >{{ $t('general.clear_all') }}</label
         >
+          {{ $t('general.clear_all') }}
+        </label>
       </sw-filter-wrapper>
     </slide-y-up-transition>
 
@@ -106,6 +107,7 @@
         to="/admin/expenses/create"
         size="lg"
         variant="primary-outline"
+        v-if="!isCustomer"
       >
         <plus-icon class="w-6 h-6 mr-1 -ml-2" />
         {{ $t('expenses.add_new_expense') }}
@@ -117,9 +119,11 @@
         class="relative flex items-center justify-between h-10 mt-5 list-none border-b-2 border-gray-200 border-solid"
       >
         <p class="text-sm">
-          {{ $t('general.showing') }}: <b>{{ expenses.length }}</b>
+          {{ $t('general.showing') }}:
+          <b>{{ expenses.length }}</b>
 
-          {{ $t('general.of') }} <b>{{ totalExpenses }}</b>
+          {{ $t('general.of') }}
+          <b>{{ totalExpenses }}</b>
         </p>
 
         <sw-transition type="fade">
@@ -243,6 +247,7 @@
           :sortable="false"
           :filterable="false"
           cell-class="action-dropdown no-click"
+          v-if="!isCustomer"
         >
           <template slot-scope="row">
             <span>{{ $t('expenses.action') }}</span>
@@ -279,7 +284,7 @@ import {
   FilterIcon,
   XIcon,
   ChevronDownIcon,
-  PlusIcon,
+  PlusIcon
 } from '@vue-hero-icons/solid'
 
 export default {
@@ -290,7 +295,7 @@ export default {
     XIcon,
     ChevronDownIcon,
     PencilIcon,
-    TrashIcon,
+    TrashIcon
   },
 
   data() {
@@ -301,8 +306,8 @@ export default {
         category: null,
         from_date: '',
         to_date: '',
-        user: '',
-      },
+        user: ''
+      }
     }
   },
 
@@ -321,12 +326,14 @@ export default {
       'selectedExpenses',
       'totalExpenses',
       'expenses',
-      'selectAllField',
+      'selectAllField'
     ]),
 
     ...mapGetters('company', ['defaultCurrency']),
 
     ...mapGetters('customer', ['customers']),
+
+    ...mapGetters('user', ['isCustomer']),
 
     selectField: {
       get: function () {
@@ -334,7 +341,7 @@ export default {
       },
       set: function (val) {
         this.selectExpense(val)
-      },
+      }
     },
 
     selectAllFieldStatus: {
@@ -343,15 +350,15 @@ export default {
       },
       set: function (val) {
         this.setSelectAllState(val)
-      },
-    },
+      }
+    }
   },
 
   watch: {
     filters: {
       handler: 'setFilters',
-      deep: true,
-    },
+      deep: true
+    }
   },
 
   destroyed() {
@@ -371,7 +378,7 @@ export default {
       'deleteExpense',
       'deleteMultipleExpenses',
       'selectAllExpenses',
-      'setSelectAllState',
+      'setSelectAllState'
     ]),
 
     ...mapActions('category', ['fetchCategories']),
@@ -399,7 +406,7 @@ export default {
 
         orderBy: sort.order || 'desc',
 
-        page,
+        page
       }
 
       this.isRequestOngoing = true
@@ -412,8 +419,8 @@ export default {
         pagination: {
           totalPages: response.data.expenses.last_page,
           currentPage: page,
-          count: response.data.expenses.count,
-        },
+          count: response.data.expenses.count
+        }
       }
     },
 
@@ -440,7 +447,7 @@ export default {
         category: null,
         from_date: '',
         to_date: '',
-        user: null,
+        user: null
       }
     },
 
@@ -466,22 +473,22 @@ export default {
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>`,
         showCancelButton: true,
-        showConfirmButton: true,
-      }).then(async (result) => {
+        showConfirmButton: true
+      }).then(async result => {
         if (result.value) {
           let res = await this.deleteExpense({ ids: [id] })
 
           if (res.data.success) {
             this.showNotification({
               type: 'success',
-              message: this.$tc('expenses.deleted_message', 1),
+              message: this.$tc('expenses.deleted_message', 1)
             })
             this.refreshTable()
             return true
           } else if (res.data.error) {
             this.showNotification({
               type: 'success',
-              message: res.data.message,
+              message: res.data.message
             })
           }
         }
@@ -497,26 +504,26 @@ export default {
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>`,
         showCancelButton: true,
-        showConfirmButton: true,
-      }).then(async (result) => {
+        showConfirmButton: true
+      }).then(async result => {
         if (result.value) {
           let request = await this.deleteMultipleExpenses()
 
           if (request.data.success) {
             this.showNotification({
               type: 'success',
-              message: this.$tc('expenses.deleted_message', 2),
+              message: this.$tc('expenses.deleted_message', 2)
             })
             this.$refs.table.refresh()
           } else if (request.data.error) {
             this.showNotification({
               type: 'error',
-              message: request.data.message,
+              message: request.data.message
             })
           }
         }
       })
-    },
-  },
+    }
+  }
 }
 </script>

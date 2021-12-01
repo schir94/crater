@@ -79,8 +79,9 @@
           class="absolute text-sm leading-snug text-black cursor-pointer"
           style="top: 10px; right: 15px"
           @click="clearFilter"
-          >{{ $t('general.clear_all') }}</label
         >
+          {{ $t('general.clear_all') }}
+        </label>
       </sw-filter-wrapper>
     </slide-y-up-transition>
 
@@ -107,8 +108,10 @@
         class="relative flex items-center justify-between h-10 mt-5 border-b-2 border-gray-200 border-solid"
       >
         <p class="text-sm">
-          {{ $t('general.showing') }}: <b>{{ customers.length }}</b>
-          {{ $t('general.of') }} <b>{{ totalCustomers }}</b>
+          {{ $t('general.showing') }}:
+          <b>{{ customers.length }}</b>
+          {{ $t('general.of') }}
+          <b>{{ totalCustomers }}</b>
         </p>
 
         <sw-transition type="fade">
@@ -176,7 +179,7 @@
           show="credit_amount"
         >
           <template slot-scope="row">
-            <span> {{ $t('customers.credits') }} </span>
+            <span>{{ $t('customers.credits') }}</span>
             <div
               v-html="
                 row.credit_amount
@@ -240,7 +243,7 @@
           show="due_amount"
         >
           <template slot-scope="row">
-            <span> {{ $t('customers.amount_due') }} </span>
+            <span>{{ $t('customers.amount_due') }}</span>
             <div v-html="$utils.formatMoney(row.due_amount, row.currency)" />
           </template>
         </sw-table-column>
@@ -258,7 +261,7 @@
           cell-class="action-dropdown"
         >
           <template slot-scope="row">
-            <span> {{ $t('customers.action') }} </span>
+            <span>{{ $t('customers.action') }}</span>
 
             <sw-dropdown>
               <dot-icon slot="activator" />
@@ -292,6 +295,7 @@
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import store from '@/store/index.js'
 import { PlusSmIcon } from '@vue-hero-icons/solid'
 import {
   FilterIcon,
@@ -299,7 +303,7 @@ import {
   ChevronDownIcon,
   TrashIcon,
   PencilIcon,
-  EyeIcon,
+  EyeIcon
 } from '@vue-hero-icons/solid'
 import AstronautIcon from '../../components/icon/AstronautIcon'
 
@@ -312,7 +316,16 @@ export default {
     XIcon,
     TrashIcon,
     PencilIcon,
-    EyeIcon,
+    EyeIcon
+  },
+  beforeRouteEnter: (to, from, next) => {
+    const currentUser = store.state.user.currentUser
+    if (
+      to.matched.some(record => record.meta.mustBeAdmiOrSuperAdmin) &&
+      (currentUser.role == 'super admin' || currentUser.role == 'admin')
+    ) {
+      next() //proceed to the route
+    } else next('/admin/invoices')
   },
   data() {
     return {
@@ -321,8 +334,8 @@ export default {
       filters: {
         display_name: '',
         contact_name: '',
-        phone: '',
-      },
+        phone: ''
+      }
     }
   },
   computed: {
@@ -336,7 +349,7 @@ export default {
       'customers',
       'selectedCustomers',
       'totalCustomers',
-      'selectAllField',
+      'selectAllField'
     ]),
     selectField: {
       get: function () {
@@ -344,7 +357,7 @@ export default {
       },
       set: function (val) {
         this.selectCustomer(val)
-      },
+      }
     },
     selectAllFieldStatus: {
       get: function () {
@@ -352,14 +365,14 @@ export default {
       },
       set: function (val) {
         this.setSelectAllState(val)
-      },
-    },
+      }
+    }
   },
   watch: {
     filters: {
       handler: 'setFilters',
-      deep: true,
-    },
+      deep: true
+    }
   },
   destroyed() {
     if (this.selectAllField) {
@@ -373,7 +386,7 @@ export default {
       'selectCustomer',
       'deleteCustomer',
       'deleteMultipleCustomers',
-      'setSelectAllState',
+      'setSelectAllState'
     ]),
     ...mapActions('notification', ['showNotification']),
     refreshTable() {
@@ -386,7 +399,7 @@ export default {
         phone: this.filters.phone,
         orderByField: sort.fieldName || 'created_at',
         orderBy: sort.order || 'desc',
-        page,
+        page
       }
 
       this.isRequestOngoing = true
@@ -397,8 +410,8 @@ export default {
         data: response.data.customers.data,
         pagination: {
           totalPages: response.data.customers.last_page,
-          currentPage: page,
-        },
+          currentPage: page
+        }
       }
     },
     setFilters() {
@@ -408,7 +421,7 @@ export default {
       this.filters = {
         display_name: '',
         contact_name: '',
-        phone: '',
+        phone: ''
       }
     },
     toggleFilter() {
@@ -428,22 +441,22 @@ export default {
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>`,
         showCancelButton: true,
-        showConfirmButton: true,
-      }).then(async (result) => {
+        showConfirmButton: true
+      }).then(async result => {
         if (result.value) {
           let res = await this.deleteCustomer({ ids: [id] })
 
           if (res.data.success) {
             this.showNotification({
               type: 'success',
-              message: this.$tc('customers.deleted_message', 1),
+              message: this.$tc('customers.deleted_message', 1)
             })
             this.$refs.table.refresh()
             return true
           }
           this.showNotification({
             type: 'error',
-            message: this.$tc(res.data.message),
+            message: this.$tc(res.data.message)
           })
           return true
         }
@@ -459,25 +472,25 @@ export default {
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>`,
         showCancelButton: true,
-        showConfirmButton: true,
-      }).then(async (result) => {
+        showConfirmButton: true
+      }).then(async result => {
         if (result.value) {
           let request = await this.deleteMultipleCustomers()
           if (request.data.success) {
             this.showNotification({
               type: 'success',
-              message: this.$tc('customers.deleted_message', 2),
+              message: this.$tc('customers.deleted_message', 2)
             })
             this.refreshTable()
           } else if (request.data.error) {
             this.showNotification({
               type: 'error',
-              message: request.data.message,
+              message: request.data.message
             })
           }
         }
       })
-    },
-  },
+    }
+  }
 }
 </script>

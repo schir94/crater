@@ -5,7 +5,7 @@
     {{ $t('general.powered_by') }}
 
     <a
-      href="http://bytefury.com/"
+      href="http://www.xama.it/"
       target="_blank"
       class="pl-1 font-normal text-gray-900"
     >

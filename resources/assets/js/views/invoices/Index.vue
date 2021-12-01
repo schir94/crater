@@ -6,7 +6,7 @@
         <sw-breadcrumb-item :title="$tc('invoices.invoice', 2)" to="#" active />
       </sw-breadcrumb>
 
-      <template slot="actions">
+      <template slot="actions" v-if="!isCustomer">
         <sw-button
           v-show="totalInvoices"
           size="lg"
@@ -95,8 +95,9 @@
           class="absolute text-sm leading-snug text-black cursor-pointer"
           style="top: 10px; right: 15px"
           @click="clearFilter"
-          >{{ $t('general.clear_all') }}</label
         >
+          {{ $t('general.clear_all') }}
+        </label>
       </sw-filter-wrapper>
     </slide-y-up-transition>
 
@@ -122,9 +123,11 @@
     <div v-show="!showEmptyScreen" class="relative">
       <div class="relative mt-5">
         <p class="absolute right-0 m-0 text-sm" style="top: 50px">
-          {{ $t('general.showing') }}: <b>{{ invoices.length }}</b>
+          {{ $t('general.showing') }}:
+          <b>{{ invoices.length }}</b>
 
-          {{ $t('general.of') }} <b>{{ totalInvoices }}</b>
+          {{ $t('general.of') }}
+          <b>{{ totalInvoices }}</b>
         </p>
 
         <sw-tabs :active-tab="activeTab" @update="setStatusFilter">
@@ -236,7 +239,7 @@
           sort-as="status"
         >
           <template slot-scope="row">
-            <span> {{ $t('invoices.status') }}</span>
+            <span>{{ $t('invoices.status') }}</span>
 
             <sw-badge
               :bg-color="$utils.getBadgeStatusColor(row.status).bgColor"
@@ -284,6 +287,7 @@
           :sortable="false"
           :filterable="false"
           cell-class="action-dropdown no-click"
+          v-if="!isCustomer"
         >
           <template slot-scope="row">
             <span>{{ $t('invoices.action') }}</span>
@@ -380,7 +384,7 @@ import {
   CheckCircleIcon,
   TrashIcon,
   XCircleIcon,
-  HashtagIcon,
+  HashtagIcon
 } from '@vue-hero-icons/solid'
 
 import { DotsHorizontalIcon } from '@vue-hero-icons/outline'
@@ -402,7 +406,7 @@ export default {
     XCircleIcon,
     EyeIcon,
     CreditCardIcon,
-    HashtagIcon,
+    HashtagIcon
   },
 
   data() {
@@ -420,17 +424,17 @@ export default {
             { name: 'SENT', value: 'SENT' },
             { name: 'VIEWED', value: 'VIEWED' },
             { name: 'OVERDUE', value: 'OVERDUE' },
-            { name: 'COMPLETED', value: 'COMPLETED' },
-          ],
+            { name: 'COMPLETED', value: 'COMPLETED' }
+          ]
         },
         {
           label: 'Paid Status',
           options: [
             { name: 'UNPAID', value: 'UNPAID' },
             { name: 'PAID', value: 'PAID' },
-            { name: 'PARTIALLY PAID', value: 'PARTIALLY_PAID' },
-          ],
-        },
+            { name: 'PARTIALLY PAID', value: 'PARTIALLY_PAID' }
+          ]
+        }
       ],
 
       isRequestOngoing: true,
@@ -440,8 +444,8 @@ export default {
         status: { name: 'SENT', value: 'SENT' },
         from_date: '',
         to_date: '',
-        invoice_number: '',
-      },
+        invoice_number: ''
+      }
     }
   },
 
@@ -460,8 +464,10 @@ export default {
       'selectedInvoices',
       'totalInvoices',
       'invoices',
-      'selectAllField',
+      'selectAllField'
     ]),
+
+    ...mapGetters('user', ['isCustomer']),
 
     selectField: {
       get: function () {
@@ -469,7 +475,7 @@ export default {
       },
       set: function (val) {
         this.selectInvoice(val)
-      },
+      }
     },
 
     selectAllFieldStatus: {
@@ -478,15 +484,15 @@ export default {
       },
       set: function (val) {
         this.setSelectAllState(val)
-      },
-    },
+      }
+    }
   },
 
   watch: {
     filters: {
       handler: 'setFilters',
-      deep: true,
-    },
+      deep: true
+    }
   },
 
   destroyed() {
@@ -507,7 +513,7 @@ export default {
       'sendEmail',
       'markAsSent',
       'setSelectAllState',
-      'cloneInvoice',
+      'cloneInvoice'
     ]),
     ...mapActions('customer', ['fetchCustomers']),
 
@@ -521,7 +527,7 @@ export default {
         componentName: 'SendInvoiceModal',
         id: invoice.id,
         data: invoice,
-        variant: 'lg',
+        variant: 'lg'
       })
     },
 
@@ -547,19 +553,19 @@ export default {
             ></path>
           </svg>`,
         showCancelButton: true,
-        showConfirmButton: true,
-      }).then(async (result) => {
+        showConfirmButton: true
+      }).then(async result => {
         if (result.value) {
           const data = {
             id: id,
-            status: 'SENT',
+            status: 'SENT'
           }
           let response = await this.markAsSent(data)
           this.refreshTable()
           if (response.data) {
             this.showNotification({
               type: 'success',
-              message: this.$tc('invoices.mark_as_sent_successfully'),
+              message: this.$tc('invoices.mark_as_sent_successfully')
             })
           }
         }
@@ -588,8 +594,8 @@ export default {
             ></path>
           </svg>`,
         showCancelButton: true,
-        showConfirmButton: true,
-      }).then(async (result) => {
+        showConfirmButton: true
+      }).then(async result => {
         if (result.value) {
           let response = await this.cloneInvoice({ id })
 
@@ -598,7 +604,7 @@ export default {
           if (response.data) {
             this.showNotification({
               type: 'success',
-              message: this.$tc('invoices.cloned_successfully'),
+              message: this.$tc('invoices.cloned_successfully')
             })
             this.$router.push(
               `/admin/invoices/${response.data.invoice.id}/edit`
@@ -619,28 +625,28 @@ export default {
         case this.$t('general.sent'):
           this.filters.status = {
             name: 'SENT',
-            value: 'SENT',
+            value: 'SENT'
           }
           break
 
         case this.$t('invoices.completed'):
           this.filters.status = {
             name: 'COMPLETED',
-            value: 'COMPLETED',
+            value: 'COMPLETED'
           }
           break
 
         case this.$t('general.draft'):
           this.filters.status = {
             name: 'DRAFT',
-            value: 'DRAFT',
+            value: 'DRAFT'
           }
           break
 
         default:
           this.filters.status = {
             name: '',
-            value: '',
+            value: ''
           }
           break
       }
@@ -660,7 +666,7 @@ export default {
         invoice_number: this.filters.invoice_number,
         orderByField: sort.fieldName || 'created_at',
         orderBy: sort.order || 'desc',
-        page,
+        page
       }
 
       this.isRequestOngoing = true
@@ -673,8 +679,8 @@ export default {
         pagination: {
           totalPages: response.data.invoices.last_page,
           currentPage: page,
-          count: response.data.invoices.count,
-        },
+          count: response.data.invoices.count
+        }
       }
     },
 
@@ -695,7 +701,7 @@ export default {
         status: '',
         from_date: '',
         to_date: '',
-        invoice_number: '',
+        invoice_number: ''
       }
 
       this.activeTab = this.$t('general.all')
@@ -723,15 +729,15 @@ export default {
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>`,
         showCancelButton: true,
-        showConfirmButton: true,
-      }).then(async (result) => {
+        showConfirmButton: true
+      }).then(async result => {
         if (result.value) {
           let res = await this.deleteInvoice({ ids: [id] })
 
           if (res.data.success) {
             this.showNotification({
               type: 'success',
-              message: this.$tc('invoices.deleted_message'),
+              message: this.$tc('invoices.deleted_message')
             })
             this.$refs.table.refresh()
             return true
@@ -742,14 +748,14 @@ export default {
               type: 'error',
               message:
                 (this.$t('invoices.payment_attached_message'),
-                this.$t('general.action_failed')),
+                this.$t('general.action_failed'))
             })
             return true
           }
 
           this.showNotification({
             type: 'error',
-            message: res.data.error,
+            message: res.data.error
           })
 
           return true
@@ -767,8 +773,8 @@ export default {
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>`,
         showCancelButton: true,
-        showConfirmButton: true,
-      }).then(async (result) => {
+        showConfirmButton: true
+      }).then(async result => {
         if (result.value) {
           let res = await this.deleteMultipleInvoices()
 
@@ -777,7 +783,7 @@ export default {
               type: 'error',
               message:
                 (this.$t('invoices.payment_attached_message'),
-                this.$t('general.action_failed')),
+                this.$t('general.action_failed'))
             })
             return true
           }
@@ -787,12 +793,12 @@ export default {
             this.resetSelectedInvoices()
             this.showNotification({
               type: 'success',
-              message: this.$tc('invoices.deleted_message', 2),
+              message: this.$tc('invoices.deleted_message', 2)
             })
           } else if (res.data.error) {
             this.showNotification({
               type: 'error',
-              message: res.data.message,
+              message: res.data.message
             })
           }
         }
@@ -820,7 +826,7 @@ export default {
           this.activeTab = this.$t('general.all')
           break
       }
-    },
-  },
+    }
+  }
 }
 </script>

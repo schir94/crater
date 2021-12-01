@@ -8,14 +8,14 @@
     >
       <img
         id="logo-white"
-        src="/assets/img/logo-white.png"
-        alt="Crater Logo"
+        src="/assets/img/logo-bianco.png"
+        alt=""
         class="hidden h-6 md:block"
       />
       <img
         id="logo-mobile"
         src="/assets/img/crater-white-small.png"
-        alt="Crater Logo"
+        alt=""
         class="block h-8 md:hidden"
       />
     </a>
@@ -101,7 +101,7 @@ import {
   DocumentTextIcon,
   DocumentIcon,
   UserIcon,
-  CogIcon,
+  CogIcon
 } from '@vue-hero-icons/solid'
 
 import { LogoutIcon } from '@vue-hero-icons/outline'
@@ -113,7 +113,7 @@ export default {
     DocumentIcon,
     UserIcon,
     CogIcon,
-    LogoutIcon,
+    LogoutIcon
   },
   computed: {
     ...mapGetters('user', ['currentUser']),
@@ -128,7 +128,7 @@ export default {
       } else {
         return '/images/default-avatar.jpg'
       }
-    },
+    }
   },
   created() {
     this.fetchCurrentUser()
@@ -137,8 +137,8 @@ export default {
     ...mapActions('user', ['fetchCurrentUser']),
     ...mapActions('auth', ['logout']),
     ...mapActions('modal', ['openModal']),
-    ...mapActions(['toggleSidebar']),
-  },
+    ...mapActions(['toggleSidebar'])
+  }
 }
 </script>
 <style lang="scss">

@@ -96,29 +96,29 @@ const routes = [
     children: [
       {
         path: '/',
-        component: Login,
+        component: Login
       },
       {
         path: 'login',
         component: Login,
-        name: 'login',
+        name: 'login'
       },
       {
         path: '/forgot-password',
         component: ForgotPassword,
-        name: 'forgot-password',
+        name: 'forgot-password'
       },
       {
         path: '/reset-password/:token',
         component: ResetPassword,
-        name: 'reset-password',
+        name: 'reset-password'
       },
       {
         path: 'register',
         component: Register,
-        name: 'register',
-      },
-    ],
+        name: 'register'
+      }
+    ]
   },
 
   /*
@@ -133,9 +133,9 @@ const routes = [
       {
         path: '/',
         component: Wizard,
-        name: 'wizard',
-      },
-    ],
+        name: 'wizard'
+      }
+    ]
   },
 
   /*
@@ -152,48 +152,55 @@ const routes = [
       {
         path: '/',
         component: Dashboard,
-        name: 'dashboard',
+        name: 'dashboard'
       },
       {
         path: 'dashboard',
-        component: Dashboard,
+        component: Dashboard
       },
 
       // Customers
       {
         path: 'customers',
         component: CustomerIndex,
+        meta: { mustBeAdmiOrSuperAdmin: true }
       },
       {
         path: 'customers/create',
         name: 'customers.create',
         component: CustomerCreate,
+        meta: { mustBeAdmiOrSuperAdmin: true }
       },
       {
         path: 'customers/:id/edit',
         name: 'customers.edit',
         component: CustomerCreate,
+        meta: { mustBeAdmiOrSuperAdmin: true }
       },
       {
         path: 'customers/:id/view',
         name: 'customers.view',
         component: CustomerView,
+        meta: { mustBeAdmiOrSuperAdmin: true }
       },
 
       // Items
       {
         path: 'items',
         component: ItemsIndex,
+        meta: { mustBeAdmiOrSuperAdmin: true }
       },
       {
         path: 'items/create',
         name: 'items.create',
         component: ItemCreate,
+        meta: { mustBeAdmiOrSuperAdmin: true }
       },
       {
         path: 'items/:id/edit',
         name: 'items.edit',
         component: ItemCreate,
+        meta: { mustBeAdmiOrSuperAdmin: true }
       },
 
       // Estimates
@@ -222,81 +229,90 @@ const routes = [
       {
         path: 'invoices',
         name: 'invoices.index',
-        component: InvoiceIndex,
+        component: InvoiceIndex
       },
       {
         path: 'invoices/create',
         name: 'invoices.create',
         component: InvoiceCreate,
+        meta: { mustBeAdmiOrSuperAdmin: true }
       },
       {
         path: 'invoices/:id/view',
         name: 'invoices.view',
-        component: InvoiceView,
+        component: InvoiceView
       },
       {
         path: 'invoices/:id/edit',
         name: 'invoices.edit',
         component: InvoiceCreate,
+        meta: { mustBeAdmiOrSuperAdmin: true }
       },
 
       // Payments
       {
         path: 'payments',
         name: 'payments.index',
-        component: PaymentsIndex,
+        component: PaymentsIndex
       },
       {
         path: 'payments/create',
         name: 'payments.create',
         component: PaymentCreate,
+        meta: { mustBeAdmiOrSuperAdmin: true }
       },
       {
         path: 'payments/:id/create',
         name: 'invoice.payments.create',
         component: PaymentCreate,
+        meta: { mustBeAdmiOrSuperAdmin: true }
       },
       {
         path: 'payments/:id/edit',
         name: 'payments.edit',
         component: PaymentCreate,
+        meta: { mustBeAdmiOrSuperAdmin: true }
       },
       {
         path: 'payments/:id/view',
         name: 'payments.view',
         component: PaymentView,
+        meta: { mustBeAdmiOrSuperAdmin: true }
       },
 
       // Expenses
       {
         path: 'expenses',
-        component: ExpensesIndex,
+        component: ExpensesIndex
       },
       {
         path: 'expenses/create',
         name: 'expenses.create',
         component: ExpenseCreate,
+        meta: { mustBeAdmiOrSuperAdmin: true }
       },
       {
         path: 'expenses/:id/edit',
         name: 'expenses.edit',
         component: ExpenseCreate,
+        meta: { mustBeAdmiOrSuperAdmin: true }
       },
 
       // User
       {
         path: 'users',
-        component: UserIndex,
+        component: UserIndex
       },
       {
         path: 'users/create',
         name: 'users.create',
         component: UserCreate,
+        meta: { mustBeAdmiOrSuperAdmin: true }
       },
       {
         path: 'users/:id/edit',
         name: 'users.edit',
-        component: UserCreate,
+        component: UserCreate
       },
 
       // Reports
@@ -331,87 +347,87 @@ const routes = [
           {
             path: 'company-info',
             name: 'company.info',
-            component: CompanyInfo,
+            component: CompanyInfo
           },
           {
             path: 'customization',
             name: 'customization',
-            component: Customization,
+            component: Customization
           },
           {
             path: 'payment-mode',
             name: 'payment.mode',
-            component: PaymentMode,
+            component: PaymentMode
           },
 
           {
             path: 'custom-fields',
             name: 'custom.fields',
-            component: CustomFieldsIndex,
+            component: CustomFieldsIndex
           },
           {
             path: 'user-profile',
             name: 'user.profile',
-            component: UserProfile,
+            component: UserProfile
           },
           {
             path: 'preferences',
             name: 'preferences',
-            component: Preferences,
+            component: Preferences
           },
           {
             path: 'tax-types',
             name: 'tax.types',
-            component: TaxTypes,
+            component: TaxTypes
           },
           {
             path: 'notes',
             name: 'notes',
-            component: NotesSetting,
+            component: NotesSetting
           },
           {
             path: 'expense-category',
             name: 'expense.category',
-            component: ExpenseCategory,
+            component: ExpenseCategory
           },
           {
             path: 'mail-configuration',
             name: 'mailconfig',
-            component: MailConfig,
+            component: MailConfig
           },
           {
             path: 'notifications',
             name: 'notifications',
-            component: Notifications,
+            component: Notifications
           },
           {
             path: 'update-app',
             name: 'updateapp',
-            component: UpdateApp,
+            component: UpdateApp
           },
           {
             path: 'backup',
             name: 'backup',
-            component: Backup,
+            component: Backup
           },
           {
             path: 'file-disk',
             name: 'file-disk',
-            component: FileDisk,
-          },
-        ],
-      },
-    ],
+            component: FileDisk
+          }
+        ]
+      }
+    ]
   },
 
   //  DEFAULT ROUTE
-  { path: '*', component: NotFoundPage },
+  { path: '*', component: NotFoundPage }
 ]
 
 const router = new VueRouter({
   routes,
   mode: 'history',
-  linkActiveClass: 'active',
+  linkActiveClass: 'active'
 })
 
 export default router

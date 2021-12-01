@@ -2,6 +2,7 @@
 
 namespace Crater\Http\Controllers\V1\Payment;
 
+use Auth;
 use Crater\Http\Controllers\Controller;
 use Crater\Http\Requests\DeletePaymentsRequest;
 use Crater\Http\Requests\PaymentRequest;
@@ -17,6 +18,8 @@ class PaymentsController extends Controller
      */
     public function index(Request $request)
     {
+        $user = Auth::user();
+
         $limit = $request->has('limit') ? $request->limit : 10;
 
         $payments = Payment::with(['user', 'invoice', 'paymentMethod', 'creator'])
@@ -32,14 +35,20 @@ class PaymentsController extends Controller
                 'orderByField',
                 'orderBy',
             ]))
-            ->whereCompany($request->header('company'))
-            ->select('payments.*', 'users.name', 'invoices.invoice_number', 'payment_methods.name as payment_mode')
-            ->latest()
-            ->paginateData($limit);
+            ->whereCompany($request->header('company'));
+
+        if ($user->isCustomer()) {
+            $payments = $payments->where('payments.user_id', $user->id);
+        }
+
+
+        $payments = $payments->select('payments.*', 'users.name', 'invoices.invoice_number', 'payment_methods.name as payment_mode')
+        ->latest()
+        ->paginateData($limit);
 
         return response()->json([
             'payments' => $payments,
-            'paymentTotalCount' => Payment::count(),
+            'paymentTotalCount' => $payments->count(),
         ]);
     }
 
@@ -51,6 +60,12 @@ class PaymentsController extends Controller
      */
     public function store(PaymentRequest $request)
     {
+        $user = Auth::user();
+
+        if ($user->isCustomer()) {
+            return response('Unauthorized.', 401);
+        }
+
         $payment = Payment::createPayment($request);
 
         return response()->json([
@@ -59,8 +74,14 @@ class PaymentsController extends Controller
         ]);
     }
 
-    public function show(Request $request, Payment $payment)
+    public function show(Payment $payment)
     {
+        $user = Auth::user();
+
+        if ($user->isCustomer() && $payment->user_id !== $user->id) {
+            return response('Unauthorized.', 401);
+        }
+
         $payment->load([
             'user',
             'invoice',
@@ -77,6 +98,12 @@ class PaymentsController extends Controller
 
     public function update(PaymentRequest $request, Payment $payment)
     {
+        $user = Auth::user();
+
+        if ($user->isCustomer()) {
+            return response('Unauthorized.', 401);
+        }
+
         $payment = $payment->updatePayment($request);
 
         return response()->json([
@@ -87,6 +114,12 @@ class PaymentsController extends Controller
 
     public function delete(DeletePaymentsRequest $request)
     {
+        $user = Auth::user();
+
+        if ($user->isCustomer()) {
+            return response('Unauthorized.', 401);
+        }
+
         Payment::deletePayments($request->ids);
 
         return response()->json([

@@ -22,8 +22,10 @@ window.hub = new Vue()
 
 window.i18n = i18n
 
+window.Store = store
+
 new Vue({
   router,
   store,
-  i18n,
+  i18n
 }).$mount('#app')

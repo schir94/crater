@@ -92,9 +92,9 @@
                 @click="openCategoryModal"
               >
                 <shopping-cart-icon class="h-5 text-center text-primary-400" />
-                <label class="ml-2 text-xs leading-none text-primary-400">{{
-                  $t('settings.expense_category.add_new_category')
-                }}</label>
+                <label class="ml-2 text-xs leading-none text-primary-400">
+                  {{ $t('settings.expense_category.add_new_category') }}
+                </label>
               </sw-button>
             </sw-select>
           </sw-input-group>
@@ -236,6 +236,7 @@
 <script>
 import moment from 'moment'
 import { mapActions, mapGetters } from 'vuex'
+import store from '@/store/index.js'
 const { required, minValue, maxLength } = require('vuelidate/lib/validators')
 import { DownloadIcon } from '@vue-hero-icons/outline'
 import { CloudUploadIcon, ShoppingCartIcon } from '@vue-hero-icons/solid'
@@ -245,17 +246,25 @@ export default {
   components: {
     CloudUploadIcon,
     ShoppingCartIcon,
-    DownloadIcon,
+    DownloadIcon
   },
   mixins: [CustomFieldsMixin],
 
   props: {
     addname: {
       type: String,
-      default: '',
-    },
+      default: ''
+    }
   },
-
+  beforeRouteEnter: (to, from, next) => {
+    const currentUser = store.state.user.currentUser
+    if (
+      to.matched.some(record => record.meta.mustBeAdmiOrSuperAdmin) &&
+      (currentUser.role == 'super admin' || currentUser.role == 'admin')
+    ) {
+      next() //proceed to the route
+    } else next('/admin/expenses')
+  },
   data() {
     return {
       formData: {
@@ -263,7 +272,7 @@ export default {
         expense_date: new Date(),
         amount: 100,
         notes: '',
-        user_id: null,
+        user_id: null
       },
 
       money: {
@@ -271,7 +280,7 @@ export default {
         thousands: ',',
         prefix: '$ ',
         precision: 2,
-        masked: false,
+        masked: false
       },
       isRequestOnGoing: false,
       isReceiptAvailable: false,
@@ -280,30 +289,30 @@ export default {
       previewReceipt: null,
       fileSendUrl: '/api/v1/expenses',
       customer: null,
-      fileObject: null,
+      fileObject: null
     }
   },
 
   validations: {
     category: {
-      required,
+      required
     },
 
     formData: {
       expense_date: {
-        required,
+        required
       },
 
       amount: {
         required,
         minValue: minValue(0.1),
-        maxLength: maxLength(20),
+        maxLength: maxLength(20)
       },
 
       notes: {
-        maxLength: maxLength(65000),
-      },
-    },
+        maxLength: maxLength(65000)
+      }
+    }
   },
 
   computed: {
@@ -315,7 +324,7 @@ export default {
       },
       set: function (newValue) {
         this.formData.amount = Math.round(newValue * 100)
-      },
+      }
     },
 
     pageTitle() {
@@ -384,13 +393,13 @@ export default {
       if (!this.$v.formData.notes.maxLength) {
         return this.$t('validation.notes_maxlength')
       }
-    },
+    }
   },
 
   watch: {
     category(newValue) {
       this.formData.expense_category_id = newValue.id
-    },
+    }
   },
 
   mounted() {
@@ -398,7 +407,7 @@ export default {
 
     this.loadData()
 
-    window.hub.$on('newCategory', (val) => {
+    window.hub.$on('newCategory', val => {
       this.category = val
     })
   },
@@ -408,7 +417,7 @@ export default {
       'getExpenseReceipt',
       'addExpense',
       'updateExpense',
-      'fetchExpense',
+      'fetchExpense'
     ]),
 
     ...mapActions('modal', ['openModal']),
@@ -422,7 +431,7 @@ export default {
     openCategoryModal() {
       this.openModal({
         title: this.$t('settings.expense_category.add_category'),
-        componentName: 'CategoryModal',
+        componentName: 'CategoryModal'
       })
     },
 
@@ -444,7 +453,7 @@ export default {
     },
 
     setExpenseCustomer(id) {
-      this.customer = this.customers.find((c) => {
+      this.customer = this.customers.find(c => {
         return c.id == id
       })
     },
@@ -469,20 +478,20 @@ export default {
 
         if (response.data.expense.expense_category_id) {
           this.category = this.categories.find(
-            (category) =>
+            category =>
               category.id === response.data.expense.expense_category_id
           )
         }
 
         if (response.data.expense.user_id) {
           this.customer = this.customers.find(
-            (customer) => customer.id === response.data.expense.user_id
+            customer => customer.id === response.data.expense.user_id
           )
         }
 
         let res = await this.fetchCustomFields({
           type: 'Expense',
-          limit: 'all',
+          limit: 'all'
         })
 
         this.setEditCustomFields(
@@ -529,21 +538,21 @@ export default {
         data.append('_method', 'PUT')
         let response = await this.updateExpense({
           id: this.$route.params.id,
-          editData: data,
+          editData: data
         })
 
         if (response.data.success) {
           this.isLoading = false
           this.showNotification({
             type: 'success',
-            message: this.$t('expenses.updated_message'),
+            message: this.$t('expenses.updated_message')
           })
           this.$router.push('/admin/expenses')
           return true
         }
         this.showNotification({
           type: 'error',
-          message: response.data.error,
+          message: response.data.error
         })
       } else {
         this.isLoading = true
@@ -553,17 +562,17 @@ export default {
         if (response.data.success) {
           this.showNotification({
             type: 'success',
-            message: this.$t('expenses.created_message'),
+            message: this.$t('expenses.created_message')
           })
           this.$router.push('/admin/expenses')
           return true
         }
         this.showNotification({
           type: 'success',
-          message: response.data.success,
+          message: response.data.success
         })
       }
-    },
-  },
+    }
+  }
 }
 </script>

@@ -11,7 +11,7 @@ export default {
 
         .get('/api/v1/bootstrap')
 
-        .then((response) => {
+        .then(response => {
           commit('user/' + userTypes.BOOTSTRAP_CURRENT_USER, response.data.user)
 
           commit(
@@ -55,7 +55,7 @@ export default {
           resolve(response)
         })
 
-        .catch((err) => {
+        .catch(err => {
           reject(err)
         })
     })
@@ -67,13 +67,13 @@ export default {
 
         .get('/api/v1/languages')
 
-        .then((response) => {
+        .then(response => {
           commit(types.SET_LANGUAGES, response.data.languages)
 
           resolve(response)
         })
 
-        .catch((err) => {
+        .catch(err => {
           reject(err)
         })
     })
@@ -85,13 +85,13 @@ export default {
 
         .get('/api/v1/currencies')
 
-        .then((response) => {
+        .then(response => {
           commit(types.SET_CURRENCIES, response.data.currencies)
 
           resolve(response)
         })
 
-        .catch((err) => {
+        .catch(err => {
           reject(err)
         })
     })
@@ -103,13 +103,13 @@ export default {
 
         .get('/api/v1/date/formats')
 
-        .then((response) => {
+        .then(response => {
           commit(types.SET_DATE_FORMATS, response.data.date_formats)
 
           resolve(response)
         })
 
-        .catch((err) => {
+        .catch(err => {
           reject(err)
         })
     })
@@ -121,13 +121,13 @@ export default {
 
         .get('/api/v1/fiscal/years')
 
-        .then((response) => {
+        .then(response => {
           commit(types.SET_FISCAL_YEARS, response.data.fiscal_years)
 
           resolve(response)
         })
 
-        .catch((err) => {
+        .catch(err => {
           reject(err)
         })
     })
@@ -139,13 +139,13 @@ export default {
 
         .get('/api/v1/timezones')
 
-        .then((response) => {
+        .then(response => {
           commit(types.SET_TIMEZONES, response.data.time_zones)
 
           resolve(response)
         })
 
-        .catch((err) => {
+        .catch(err => {
           reject(err)
         })
     })
@@ -157,13 +157,13 @@ export default {
 
         .get('/api/v1/countries')
 
-        .then((response) => {
+        .then(response => {
           commit(types.SET_COUNTRIES, response.data.countries)
 
           resolve(response)
         })
 
-        .catch((err) => {
+        .catch(err => {
           reject(err)
         })
     })
@@ -171,5 +171,5 @@ export default {
 
   toggleSidebar({ commit }) {
     commit(types.TOGGLE_SIDEBAR)
-  },
+  }
 }

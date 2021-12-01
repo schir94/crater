@@ -23,7 +23,7 @@ class BootstrapController extends Controller
 
         $default_language = $user->getSettings(['language']);
 
-        $default_language = array_key_exists('language', $default_language) ? $default_language['language'] : 'en';
+        $default_language = array_key_exists('language', $default_language) ? $default_language['language'] : 'it';
 
         $settings = [
             'moment_date_format',

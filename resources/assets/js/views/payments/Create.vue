@@ -77,39 +77,33 @@
             />
           </sw-input-group>
 
-
           <div class="grid gap-2 grid-col-1 md:grid-cols-2">
-              <sw-input-group
-                :label="$t('payments.customer')"
-                :error="customerError"
-                required
-              >
-                <sw-select
-                  v-model="customer"
-                  :options="customers"
-                  :searchable="true"
-                  :show-labels="false"
-                  :allow-empty="false"
-                  :disabled="isEdit"
-                  :placeholder="$t('customers.select_a_customer')"
-                  label="name"
-                  class="mt-1"
-                  track-by="id"
-                />
+            <sw-input-group
+              :label="$t('payments.customer')"
+              :error="customerError"
+              required
+            >
+              <sw-select
+                v-model="customer"
+                :options="customers"
+                :searchable="true"
+                :show-labels="false"
+                :allow-empty="false"
+                :disabled="isEdit"
+                :placeholder="$t('customers.select_a_customer')"
+                label="name"
+                class="mt-1"
+                track-by="id"
+              />
+            </sw-input-group>
 
-              </sw-input-group>
-
-              <sw-input-group
-                :label="$t('customers.credits')"
-              >
-
+            <sw-input-group :label="$t('customers.credits')">
               <sw-money
                 v-model="credit_amount"
                 :currency="customerCurrency"
                 class="relative w-full focus:border focus:border-solid focus:border-primary-500"
                 :disabled="true"
-                />
-
+              />
             </sw-input-group>
           </div>
 
@@ -162,9 +156,9 @@
                   @click="addPaymentMode"
                 >
                   <shopping-cart-icon class="h-5 mr-3 text-primary-400" />
-                  <label>{{
-                    $t('settings.customization.payments.add_payment_mode')
-                  }}</label>
+                  <label>
+                    {{ $t('settings.customization.payments.add_payment_mode') }}
+                  </label>
                 </button>
               </div>
             </sw-select>
@@ -228,19 +222,34 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import store from '@/store/index.js'
 import moment from 'moment'
 import { ShoppingCartIcon } from '@vue-hero-icons/solid'
 import CustomFieldsMixin from '../../mixins/customFields'
 import axios from 'axios'
 
-const { required, between, numeric, maxValue } = require('vuelidate/lib/validators')
+const {
+  required,
+  between,
+  numeric,
+  maxValue
+} = require('vuelidate/lib/validators')
 //const contains = (param) =>
 //  (value) => !helpers.req(value) || value.indexOf(param) >= 0
-
 
 export default {
   components: { ShoppingCartIcon },
   mixins: [CustomFieldsMixin],
+
+  beforeRouteEnter: (to, from, next) => {
+    const currentUser = store.state.user.currentUser
+    if (
+      to.matched.some(record => record.meta.mustBeAdmiOrSuperAdmin) &&
+      (currentUser.role == 'super admin' || currentUser.role == 'admin')
+    ) {
+      next() //proceed to the route
+    } else next('/admin/payments')
+  },
 
   data() {
     return {
@@ -252,14 +261,14 @@ export default {
         payment_method: null,
         invoice_id: null,
         notes: null,
-        payment_method_id: null,
+        payment_method_id: null
       },
       money: {
         decimal: '.',
         thousands: ',',
         prefix: '$ ',
         precision: 2,
-        masked: false,
+        masked: false
       },
       customer: null,
       credit_amount: null,
@@ -276,29 +285,29 @@ export default {
         'company',
         'customerCustom',
         'payment',
-        'paymentCustom',
-      ],
+        'paymentCustom'
+      ]
     }
   },
   validations() {
     return {
       customer: {
-        required,
+        required
       },
       formData: {
         payment_date: {
-          required,
+          required
         },
         amount: {
           required,
           between: between(1, this.credit_amount * 100),
-          maxValue: maxValue(this.maxPayableAmount),
-        },
+          maxValue: maxValue(this.maxPayableAmount)
+        }
       },
       paymentNumAttribute: {
         required,
-        numeric,
-      },
+        numeric
+      }
     }
   },
   computed: {
@@ -311,7 +320,7 @@ export default {
       },
       set: function (newValue) {
         this.formData.amount = Math.round(newValue * 100)
-      },
+      }
     },
     pageTitle() {
       if (this.$route.name === 'payments.edit') {
@@ -332,7 +341,7 @@ export default {
           thousands: this.customer.currency.thousand_separator,
           prefix: this.customer.currency.symbol + ' ',
           precision: this.customer.currency.precision,
-          masked: false,
+          masked: false
         }
       } else {
         return this.defaultCurrencyForInput
@@ -391,7 +400,7 @@ export default {
       if (!this.$v.paymentNumAttribute.numeric) {
         return this.$tc('validation.numbers_only')
       }
-    },
+    }
   },
   watch: {
     customer(newValue) {
@@ -421,7 +430,7 @@ export default {
         this.setPaymentAmountByInvoiceData(newValue.id)
         //}
       }
-    },
+    }
   },
   async mounted() {
     this.$v.formData.$reset()
@@ -441,7 +450,7 @@ export default {
       'updatePayment',
       'fetchPayment',
       'fetchPaymentModes',
-      'resetSelectedNote',
+      'resetSelectedNote'
     ]),
 
     ...mapActions('company', ['fetchCompanySettings']),
@@ -462,7 +471,7 @@ export default {
     async addPaymentMode() {
       this.openModal({
         title: this.$t('settings.customization.payments.add_payment_mode'),
-        componentName: 'PaymentMode',
+        componentName: 'PaymentMode'
       })
     },
 
@@ -504,7 +513,7 @@ export default {
         }
         let res = await this.fetchCustomFields({
           type: 'Payment',
-          limit: 'all',
+          limit: 'all'
         })
         this.setEditCustomFields(
           response.data.payment.fields,
@@ -534,7 +543,7 @@ export default {
       return true
     },
     setPaymentCustomer(id) {
-      this.customer = this.customers.find((c) => {
+      this.customer = this.customers.find(c => {
         return c.id === id
       })
     },
@@ -551,7 +560,7 @@ export default {
     async fetchCustomerInvoices(userId) {
       let data = {
         customer_id: userId,
-        status: 'DUE',
+        status: 'DUE'
       }
       let response = await this.fetchInvoices(data)
       this.invoiceList = response.data.invoices.data
@@ -576,9 +585,9 @@ export default {
               : null,
             payment_date: moment(this.formData.payment_date).format(
               'YYYY-MM-DD'
-            ),
+            )
           },
-          id: this.$route.params.id,
+          id: this.$route.params.id
         }
 
         try {
@@ -593,20 +602,20 @@ export default {
             )
             this.showNotification({
               type: 'success',
-              message: this.$t('payments.updated_message'),
+              message: this.$t('payments.updated_message')
             })
             return true
           }
           if (response.data.error === 'invalid_amount') {
             this.showNotification({
               type: 'error',
-              message: this.$t('invalid_amount_message'),
+              message: this.$t('invalid_amount_message')
             })
             return false
           }
           this.showNotification({
             type: 'error',
-            message: response.data.error,
+            message: response.data.error
           })
         } catch (err) {
           this.isLoading = false
@@ -614,13 +623,13 @@ export default {
           if (err.response.data.errors.payment_number) {
             this.showNotification({
               type: 'error',
-              message: err.response.data.errors.payment_number,
+              message: err.response.data.errors.payment_number
             })
             return true
           }
           this.showNotification({
             type: 'error',
-            message: err.response.data.message,
+            message: err.response.data.message
           })
         }
       } else {
@@ -629,7 +638,7 @@ export default {
           payment_method_id: this.formData.payment_method
             ? this.formData.payment_method.id
             : null,
-          payment_date: moment(this.formData.payment_date).format('YYYY-MM-DD'),
+          payment_date: moment(this.formData.payment_date).format('YYYY-MM-DD')
         }
 
         this.isLoading = true
@@ -644,7 +653,7 @@ export default {
             )
             this.showNotification({
               type: 'success',
-              message: this.$t('payments.created_message'),
+              message: this.$t('payments.created_message')
             })
             this.isLoading = true
             return true
@@ -652,20 +661,20 @@ export default {
           if (response.data.error === 'not_enough_credit') {
             this.showNotification({
               type: 'error',
-              message: this.$t('payments.not_enough_credit'),
+              message: this.$t('payments.not_enough_credit')
             })
             return false
           }
           if (response.data.error === 'invalid_amount') {
             this.showNotification({
               type: 'error',
-              message: this.$t('invalid_amount_message'),
+              message: this.$t('invalid_amount_message')
             })
             return false
           }
           this.showNotification({
             type: 'error',
-            message: response.data.error,
+            message: response.data.error
           })
         } catch (err) {
           this.isLoading = false
@@ -673,13 +682,13 @@ export default {
           if (err.response.data.errors.payment_number) {
             this.showNotification({
               type: 'error',
-              message: err.response.data.errors.payment_number,
+              message: err.response.data.errors.payment_number
             })
             return true
           }
           this.showNotification({
             type: 'error',
-            message: err.response.data.message,
+            message: err.response.data.message
           })
         }
       }
@@ -687,7 +696,7 @@ export default {
     onSelectNote(data) {
       this.formData.notes = '' + data.notes
       this.$refs.notePopup.close()
-    },
-  },
+    }
+  }
 }
 </script>

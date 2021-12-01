@@ -81,31 +81,31 @@ export default {
     //conTwitter,
     //conGoogle,
     EyeIcon,
-    EyeOffIcon,
+    EyeOffIcon
   },
   data() {
     return {
       loginData: {
         email: '',
         password: '',
-        remember: '',
+        remember: ''
       },
       submitted: false,
       isLoading: false,
-      isShowPassword: false,
+      isShowPassword: false
     }
   },
   validations: {
     loginData: {
       email: {
         required,
-        email,
+        email
       },
       password: {
         required,
-        minLength: minLength(8),
-      },
-    },
+        minLength: minLength(8)
+      }
+    }
   },
   computed: {
     emailError() {
@@ -143,7 +143,7 @@ export default {
         return 'text'
       }
       return 'password'
-    },
+    }
   },
   methods: {
     ...mapActions('auth', ['login']),
@@ -163,13 +163,13 @@ export default {
         this.$router.push('/admin/dashboard')
         this.showNotification({
           type: 'success',
-          message: 'Logged in successfully.',
+          message: 'Logged in successfully.'
         })
         this.isLoading = false
       } catch (error) {
         this.isLoading = false
       }
-    },
-  },
+    }
+  }
 }
 </script>
